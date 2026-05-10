@@ -14,7 +14,22 @@
         <!-- 1. INICIO -->
         <section id="screen-inicio" class="screen active">
             <h1 style="font-size: 24px; margin-bottom: 5px;">Hola, <span id="home-username">amigo</span> 👋</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Este es tu resumen de hoy.</p>
+            <p style="color: var(--text-secondary); margin-bottom: 12px;">Este es tu resumen de hoy.</p>
+
+            <!-- Filtro de Fecha -->
+            <div id="date-filter-bar" style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;">
+                <button class="filter-btn active" onclick="setDateFilter('today')" id="filter-today">Hoy</button>
+                <button class="filter-btn" onclick="setDateFilter('week')" id="filter-week">Semana</button>
+                <button class="filter-btn" onclick="setDateFilter('month')" id="filter-month">Mes</button>
+                <button class="filter-btn" onclick="setDateFilter('custom')" id="filter-custom">📅 Personalizado</button>
+            </div>
+            <!-- Rango personalizado (oculto por defecto) -->
+            <div id="custom-date-range" style="display:none; gap: 8px; margin-bottom: 14px; align-items: center; flex-wrap: wrap;">
+                <input type="date" id="date-from" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px;">
+                <span style="color: var(--text-secondary); font-size: 13px;">hasta</span>
+                <input type="date" id="date-to" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px;">
+                <button onclick="applyCustomFilter()" style="padding: 6px 14px; border-radius: 8px; background: var(--accent-blue); color: white; border: none; cursor: pointer; font-size: 13px;">Aplicar</button>
+            </div>
 
             <div class="summary-grid">
                 <div class="summary-card primary">
@@ -35,7 +50,7 @@
                     <h2 id="home-balance" style="font-size: 36px; margin: 5px 0;">$0</h2>
                 </div>
                 <div class="summary-card">
-                    <p style="color: var(--text-secondary); font-size: 12px;">Gastos (Mes)</p>
+                    <p id="home-expenses-label" style="color: var(--text-secondary); font-size: 12px;">Gastos (Hoy)</p>
                     <h3 id="home-expenses" style="color: var(--danger);">$0</h3>
                 </div>
                 <div class="summary-card">
@@ -56,6 +71,7 @@
                 <!-- Dinámico -->
             </div>
         </section>
+
 
         <!-- 2. GASTOS -->
         <section id="screen-gastos" class="screen">

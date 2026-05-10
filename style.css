@@ -377,3 +377,30 @@ h3 {
     width: 90%;
     max-width: 400px;
 }
+
+/* Filtros de fecha */
+.filter-btn {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-btn.active {
+    background: var(--accent-blue);
+    color: var(--primary-bg);
+    border-color: var(--accent-blue);
+    font-weight: 600;
+}
+
+.filter-btn:hover:not(.active) {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}

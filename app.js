@@ -56,6 +56,67 @@ const formatMoney = (amount) => {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount);
 };
 
+// ---- Filtro de Fecha ----
+let activeFilter = 'today';
+let customFrom = null;
+let customTo = null;
+
+function setDateFilter(filter) {
+    activeFilter = filter;
+    // Actualizar estilos de botones
+    ['today', 'week', 'month', 'custom'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (btn) btn.classList.toggle('active', f === filter);
+    });
+    // Mostrar/ocultar selector de rango personalizado
+    const customRange = document.getElementById('custom-date-range');
+    if (customRange) customRange.style.display = (filter === 'custom') ? 'flex' : 'none';
+    // Solo renderizar si no es personalizado (espera clic en Aplicar)
+    if (filter !== 'custom') renderInicio();
+}
+
+function applyCustomFilter() {
+    const from = document.getElementById('date-from').value;
+    const to = document.getElementById('date-to').value;
+    if (!from || !to) return alert('Selecciona ambas fechas.');
+    customFrom = new Date(from + 'T00:00:00');
+    customTo = new Date(to + 'T23:59:59');
+    renderInicio();
+}
+
+function getFilterDateRange() {
+    const now = new Date();
+    let from, to;
+    to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+    if (activeFilter === 'today') {
+        from = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    } else if (activeFilter === 'week') {
+        const day = now.getDay(); // 0=Dom
+        from = new Date(now);
+        from.setDate(now.getDate() - day);
+        from.setHours(0, 0, 0, 0);
+    } else if (activeFilter === 'month') {
+        from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+    } else if (activeFilter === 'custom' && customFrom && customTo) {
+        from = customFrom;
+        to = customTo;
+    } else {
+        from = new Date(0); // sin límite inferior si no hay rango personalizado aún
+    }
+    return { from, to };
+}
+
+function getFilterLabel() {
+    const labels = { today: 'Hoy', week: 'Esta Semana', month: 'Este Mes', custom: 'Rango' };
+    return labels[activeFilter] || 'Periodo';
+}
+
+function getFilteredExpenses() {
+    const { from, to } = getFilterDateRange();
+    return state.expenses.filter(e => e.date >= from && e.date <= to);
+}
+
+
 function getExpenseIcon(cat) {
     const icons = { 'Comida': '🍔', 'Transporte': '🚗', 'Salidas': '🎉', 'Compras': '🛍️', 'Otros': '📦' };
     return icons[cat] || '💸';
@@ -88,25 +149,33 @@ function switchScreen(screenId) {
 
 // ---- Pantalla 1: Inicio ----
 function renderInicio() {
-    // Calculamos gastos actuales
-    const currentExpenses = state.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+    // Gastos totales reales (para notificaciones comparativas)
+    const totalExpenses = state.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+
+    // Gastos filtrados por fecha seleccionada
+    const filteredExpenses = getFilteredExpenses();
+    const filteredTotal = filteredExpenses.reduce((acc, curr) => acc + curr.amount, 0);
 
     document.getElementById('home-balance').innerText = formatMoney(state.balance);
-    document.getElementById('home-expenses').innerText = formatMoney(currentExpenses);
+    document.getElementById('home-expenses').innerText = formatMoney(filteredTotal);
     document.getElementById('home-savings').innerText = formatMoney(state.totalSavings);
+
+    // Actualizar etiqueta del filtro activo
+    const labelEl = document.getElementById('home-expenses-label');
+    if (labelEl) labelEl.innerText = `Gastos (${getFilterLabel()})`;
 
     // Nombre de usuario en saludo
     const usernameEl = document.getElementById('home-username');
     if (usernameEl) usernameEl.innerText = state.userName || 'amigo';
 
-    // Notificaciones dinámicas basadas en datos reales
+    // Notificaciones dinámicas basadas en datos reales (usa totales completos)
     const metaTotal = 4000000;
     const pctMeta = Math.min(100, Math.round((state.totalSavings / metaTotal) * 100));
     const ahorroRestante = metaTotal - state.totalSavings;
 
     const dynamicNotifications = [
         `💡 Si reduces tus comidas fuera de casa esta semana, podrías ahorrar $40,000 adicionales.`,
-        currentExpenses > state.lastMonthTotal
+        totalExpenses > state.lastMonthTotal
             ? `⚠️ Has gastado más que el mes pasado. ¡Revisa tus gastos!`
             : `🔥 ¡Vas excelente! Has gastado menos que el mes pasado a esta misma fecha.`,
         pctMeta >= 100
@@ -125,6 +194,7 @@ function renderInicio() {
     `;
     lucide.createIcons();
 }
+
 
 // ---- Pantalla 2: Gastos ----
 function renderGastos() {
