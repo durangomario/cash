@@ -56,64 +56,37 @@ const formatMoney = (amount) => {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount);
 };
 
-// ---- Filtro de Fecha ----
-let activeFilter = 'today';
-let customFrom = null;
-let customTo = null;
-
-function setDateFilter(filter) {
-    activeFilter = filter;
-    // Actualizar estilos de botones
-    ['today', 'week', 'month', 'custom'].forEach(f => {
-        const btn = document.getElementById(`filter-${f}`);
-        if (btn) btn.classList.toggle('active', f === filter);
-    });
-    // Mostrar/ocultar selector de rango personalizado
-    const customRange = document.getElementById('custom-date-range');
-    if (customRange) customRange.style.display = (filter === 'custom') ? 'flex' : 'none';
-    // Solo renderizar si no es personalizado (espera clic en Aplicar)
-    if (filter !== 'custom') renderInicio();
+// ---- Filtro de Fecha (Inicio / Fin) ----
+function initDateFilter() {
+    const now = new Date();
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const toStr = now.toISOString().split('T')[0];
+    const fromStr = firstOfMonth.toISOString().split('T')[0];
+    const fromEl = document.getElementById('date-from');
+    const toEl = document.getElementById('date-to');
+    if (fromEl && !fromEl.value) fromEl.value = fromStr;
+    if (toEl && !toEl.value) toEl.value = toStr;
 }
 
-function applyCustomFilter() {
-    const from = document.getElementById('date-from').value;
-    const to = document.getElementById('date-to').value;
-    if (!from || !to) return alert('Selecciona ambas fechas.');
-    customFrom = new Date(from + 'T00:00:00');
-    customTo = new Date(to + 'T23:59:59');
+function applyDateRangeFilter() {
     renderInicio();
 }
 
-function getFilterDateRange() {
-    const now = new Date();
-    let from, to;
-    to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-    if (activeFilter === 'today') {
-        from = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-    } else if (activeFilter === 'week') {
-        const day = now.getDay(); // 0=Dom
-        from = new Date(now);
-        from.setDate(now.getDate() - day);
-        from.setHours(0, 0, 0, 0);
-    } else if (activeFilter === 'month') {
-        from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
-    } else if (activeFilter === 'custom' && customFrom && customTo) {
-        from = customFrom;
-        to = customTo;
-    } else {
-        from = new Date(0); // sin límite inferior si no hay rango personalizado aún
-    }
-    return { from, to };
+function getFilteredExpenses() {
+    const fromVal = document.getElementById('date-from')?.value;
+    const toVal = document.getElementById('date-to')?.value;
+    if (!fromVal && !toVal) return state.expenses;
+    const from = fromVal ? new Date(fromVal + 'T00:00:00') : new Date(0);
+    const to = toVal ? new Date(toVal + 'T23:59:59') : new Date();
+    return state.expenses.filter(e => e.date >= from && e.date <= to);
 }
 
 function getFilterLabel() {
-    const labels = { today: 'Hoy', week: 'Esta Semana', month: 'Este Mes', custom: 'Rango' };
-    return labels[activeFilter] || 'Periodo';
-}
-
-function getFilteredExpenses() {
-    const { from, to } = getFilterDateRange();
-    return state.expenses.filter(e => e.date >= from && e.date <= to);
+    const fromVal = document.getElementById('date-from')?.value;
+    const toVal = document.getElementById('date-to')?.value;
+    if (fromVal && toVal && fromVal === toVal) return fromVal;
+    if (fromVal && toVal) return `${fromVal} → ${toVal}`;
+    return 'Periodo';
 }
 
 
@@ -615,6 +588,7 @@ function editSaving(id) {
 // Inicialización
 window.onload = () => {
     loadState();
+    initDateFilter();
     renderInicio();
     renderAhorro();
     renderInversion();

@@ -17,18 +17,15 @@
             <p style="color: var(--text-secondary); margin-bottom: 12px;">Este es tu resumen de hoy.</p>
 
             <!-- Filtro de Fecha -->
-            <div id="date-filter-bar" style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;">
-                <button class="filter-btn active" onclick="setDateFilter('today')" id="filter-today">Hoy</button>
-                <button class="filter-btn" onclick="setDateFilter('week')" id="filter-week">Semana</button>
-                <button class="filter-btn" onclick="setDateFilter('month')" id="filter-month">Mes</button>
-                <button class="filter-btn" onclick="setDateFilter('custom')" id="filter-custom">📅 Personalizado</button>
-            </div>
-            <!-- Rango personalizado (oculto por defecto) -->
-            <div id="custom-date-range" style="display:none; gap: 8px; margin-bottom: 14px; align-items: center; flex-wrap: wrap;">
-                <input type="date" id="date-from" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px;">
-                <span style="color: var(--text-secondary); font-size: 13px;">hasta</span>
-                <input type="date" id="date-to" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px;">
-                <button onclick="applyCustomFilter()" style="padding: 6px 14px; border-radius: 8px; background: var(--accent-blue); color: white; border: none; cursor: pointer; font-size: 13px;">Aplicar</button>
+            <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+                <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
+                    <label style="font-size: 11px; color: var(--text-secondary);">Inicio</label>
+                    <input type="date" id="date-from" oninput="applyDateRangeFilter()" style="padding: 7px 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px; width: 100%; font-family: 'Outfit', sans-serif;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
+                    <label style="font-size: 11px; color: var(--text-secondary);">Fin</label>
+                    <input type="date" id="date-to" oninput="applyDateRangeFilter()" style="padding: 7px 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px; width: 100%; font-family: 'Outfit', sans-serif;">
+                </div>
             </div>
 
             <div class="summary-grid">
