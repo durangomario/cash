@@ -13,7 +13,7 @@
     <div id="app">
         <!-- 1. INICIO -->
         <section id="screen-inicio" class="screen active">
-            <h1 style="font-size: 24px; margin-bottom: 5px;">Hola, Liz👋</h1>
+            <h1 style="font-size: 24px; margin-bottom: 5px;">Hola, <span id="home-username">amigo</span> 👋</h1>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">Este es tu resumen de hoy.</p>
 
             <div class="summary-grid">
@@ -191,10 +191,10 @@
             <div style="text-align: center; margin-bottom: 30px;">
                 <div
                     style="width: 100px; height: 100px; border-radius: 50%; background: var(--secondary-bg); margin: 0 auto 15px; border: 3px solid var(--accent-blue); overflow: hidden;">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar"
+                    <img id="profile-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar"
                         style="width: 100%; height: 100%;">
                 </div>
-                <h2>Alex Estudiante</h2>
+                <h2 id="profile-name">Alex Estudiante</h2>
                 <p id="profile-level" style="color: var(--text-secondary);">Nivel 1: Novato</p>
 
                 <div class="progress-container" style="width: 200px; margin: 10px auto;">
@@ -212,7 +212,7 @@
 
             <div style="text-align: center; margin-top: 20px;">
                 <button class="btn" style="background: var(--secondary-bg); color: var(--danger);"
-                    onclick="window.location.href='index.html'">Cerrar Sesión (Demo)</button>
+                    onclick="localStorage.removeItem('kash_active_user'); window.location.href='index.html'">Cerrar Sesión</button>
             </div>
         </section>
 

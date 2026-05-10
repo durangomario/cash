@@ -1,26 +1,55 @@
-// Estado global de la aplicación (Datos Simulados)
+// Estado global de la aplicación
 const state = {
     currentScreen: 'inicio',
-    balance: 850000,
-    expenses: [
-        { id: 1, category: 'Comida', amount: 45000, date: new Date() },
-        { id: 2, category: 'Transporte', amount: 15000, date: new Date() },
-        { id: 3, category: 'Salidas', amount: 80000, date: new Date() }
-    ],
-    savings: [
-        { id: 1, amount: 450000, date: new Date() }
-    ],
+    balance: 0,
+    expenses: [],
+    savings: [],
     investments: [],
     get totalSavings() { return this.savings.reduce((a, b) => a + b.amount, 0); },
     get portfolio() { return this.investments.reduce((a, b) => a + b.amount, 0); },
-    // Gastos del mes pasado (para comparación)
-    lastMonthTotal: 120000,
+    lastMonthTotal: 0,
+    userName: '',
+    userEmail: '',
     notifications: [
         "💡 Si reduces tus comidas fuera de casa esta semana, podrías ahorrar $40,000 adicionales.",
         "🔥 ¡Vas excelente! Has gastado 15% menos que el mes pasado a esta misma fecha.",
         "🎯 Estás a un 45% de lograr tu meta: MacBook Pro."
     ]
 };
+
+// Devuelve la clave de localStorage para el usuario activo
+function getUserKey() {
+    const email = localStorage.getItem('kash_active_user');
+    return email ? `kash_user_${email}` : 'kash_user_guest';
+}
+
+function saveState() {
+    localStorage.setItem(getUserKey(), JSON.stringify({
+        balance: state.balance,
+        expenses: state.expenses,
+        savings: state.savings,
+        investments: state.investments,
+        lastMonthTotal: state.lastMonthTotal,
+        userName: state.userName,
+        userEmail: state.userEmail
+    }));
+}
+
+function loadState() {
+    const saved = localStorage.getItem(getUserKey());
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed.balance !== undefined) state.balance = parsed.balance;
+            if (parsed.lastMonthTotal !== undefined) state.lastMonthTotal = parsed.lastMonthTotal;
+            if (parsed.userName) state.userName = parsed.userName;
+            if (parsed.userEmail) state.userEmail = parsed.userEmail;
+            if (parsed.expenses) state.expenses = parsed.expenses.map(e => ({...e, date: new Date(e.date)}));
+            if (parsed.savings) state.savings = parsed.savings.map(s => ({...s, date: new Date(s.date)}));
+            if (parsed.investments) state.investments = parsed.investments.map(i => ({...i, date: new Date(i.date)}));
+        } catch (e) { console.error("Error loading state", e); }
+    }
+}
 
 // Utilidad para formatear moneda
 const formatMoney = (amount) => {
@@ -65,6 +94,10 @@ function renderInicio() {
     document.getElementById('home-balance').innerText = formatMoney(state.balance);
     document.getElementById('home-expenses').innerText = formatMoney(currentExpenses);
     document.getElementById('home-savings').innerText = formatMoney(state.totalSavings);
+
+    // Nombre de usuario en saludo
+    const usernameEl = document.getElementById('home-username');
+    if (usernameEl) usernameEl.innerText = state.userName || 'amigo';
 
     // Notificación aleatoria
     const randomNotif = state.notifications[Math.floor(Math.random() * state.notifications.length)];
@@ -140,11 +173,20 @@ function renderGastos() {
     const trendEl = document.getElementById('expense-trend');
     const recEl = document.getElementById('expense-recommendation');
 
+    let highestCategory = "Salidas"; // default
+    if (state.expenses.length > 0) {
+        const catTotals = {};
+        state.expenses.forEach(e => {
+            catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+        });
+        highestCategory = Object.keys(catTotals).reduce((a, b) => catTotals[a] > catTotals[b] ? a : b);
+    }
+
     if (currentExpenses > state.lastMonthTotal) {
         trendEl.innerHTML = `📈 Más que el mes pasado`;
         trendEl.style.color = "var(--danger)";
         trendEl.style.background = "rgba(239, 68, 68, 0.2)";
-        recEl.innerHTML = `<p style="font-size: 14px;">⚠️ Has gastado más de lo habitual. Te recomendamos pausar las "Salidas" esta semana.</p>`;
+        recEl.innerHTML = `<p style="font-size: 14px;">⚠️ Has gastado más de lo habitual. Te recomendamos pausar los gastos en "${highestCategory}" esta semana.</p>`;
     } else {
         trendEl.innerHTML = `📉 Menos que el mes pasado`;
         trendEl.style.color = "var(--safe)";
@@ -183,6 +225,7 @@ function addExpense() {
     // Actualizar inicio de fondo
     renderInicio();
 
+    saveState();
     alert(`¡Has registrado un gasto de ${formatMoney(amount)} en ${category}!`);
 }
 
@@ -196,6 +239,7 @@ function deleteExpense(id) {
 
         if (state.currentScreen === 'gastos') renderGastos();
         if (state.currentScreen === 'inicio') renderInicio();
+        saveState();
     }
 }
 
@@ -214,6 +258,7 @@ function editExpense(id) {
 
     if (state.currentScreen === 'gastos') renderGastos();
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
 }
 
 // ---- Pantalla 3: Ahorro ----
@@ -308,6 +353,7 @@ function simulateInvest(instrumentName) {
     renderInversion();
     if (state.currentScreen === 'inicio') renderInicio();
 
+    saveState();
     alert(`¡Inversión simulada exitosa! ${formatMoney(amount)} añadidos a tu portafolio en ${instrumentName}.`);
 }
 
@@ -320,6 +366,7 @@ function deleteInvestment(id) {
         state.investments.splice(index, 1);
         renderInversion();
         if (state.currentScreen === 'inicio') renderInicio();
+        saveState();
     }
 }
 
@@ -344,6 +391,7 @@ function editInvestment(id) {
 
     renderInversion();
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
 }
 
 // ---- Pantalla 5: Perfil ----
@@ -357,6 +405,13 @@ function renderPerfil() {
 
     const profileLvl = document.getElementById('profile-level');
     if (profileLvl) {
+        // Nombre e imagen del perfil
+        const displayName = state.userName || 'Usuario KASH';
+        const nameEl = document.getElementById('profile-name');
+        const avatarEl = document.getElementById('profile-avatar');
+        if (nameEl) nameEl.innerHTML = `${displayName} <button onclick="editUserName()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;vertical-align:middle;" title="Editar nombre"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>`;
+        if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(displayName)}`;
+
         profileLvl.innerText = `Nivel ${level}: ${levelTitle}`;
         document.getElementById('profile-xp').innerText = `${currentLevelXp} / 500 XP (Total: ${xp} XP)`;
         document.getElementById('profile-progress').style.width = `${progressPercent}%`;
@@ -376,6 +431,18 @@ function renderPerfil() {
                 <span class="badge-title" style="font-size: 11px;">${b.title}</span>
             </div>
         `).join('');
+
+        lucide.createIcons();
+    }
+}
+
+function editUserName() {
+    const newName = prompt('¿Cómo quieres que te llamemos?', state.userName || '');
+    if (newName && newName.trim()) {
+        state.userName = newName.trim();
+        saveState();
+        renderPerfil();
+        renderInicio();
     }
 }
 
@@ -388,6 +455,7 @@ function editBalance() {
 
     state.balance = amount;
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
     alert(`Saldo actualizado a ${formatMoney(amount)}`);
 }
 
@@ -400,6 +468,7 @@ function addIncome() {
     state.balance += amount;
 
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
     alert(`¡Has ingresado ${formatMoney(amount)} a tu saldo!`);
 }
 
@@ -418,6 +487,7 @@ function addSavings() {
 
     renderAhorro();
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
     alert(`¡Has abonado ${formatMoney(amount)} a tu meta de ahorro!`);
 }
 
@@ -430,6 +500,7 @@ function deleteSaving(id) {
         state.savings.splice(index, 1);
         renderAhorro();
         if (state.currentScreen === 'inicio') renderInicio();
+        saveState();
     }
 }
 
@@ -454,10 +525,12 @@ function editSaving(id) {
 
     renderAhorro();
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
 }
 
 // Inicialización
 window.onload = () => {
+    loadState();
     renderInicio();
     renderAhorro();
     renderInversion();

@@ -24,8 +24,9 @@
             <p>La primera app diseñada para que estudiantes universitarios aprendan a ahorrar, presupuestar e invertir
                 sin complicaciones. 100% gratis para correos .edu.</p>
 
-            <form class="hero-form" onsubmit="event.preventDefault(); window.location.href='app.html';">
-                <input type="email" placeholder="tu.correo@universidad.edu.co" required>
+            <form class="hero-form" onsubmit="handleRegister(event)">
+                <input type="text" id="reg-name" placeholder="Tu nombre" required style="margin-bottom: 10px;">
+                <input type="email" id="reg-email" placeholder="tu.correo@universidad.edu.co" required>
                 <button type="submit" class="btn-cta">Únete a la Lista VIP</button>
             </form>
             <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px;">Solo 500 cupos disponibles para el
@@ -211,6 +212,35 @@
     <script>
         // Inicializar Iconos
         lucide.createIcons();
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            if (!name || !email) return;
+
+            const userKey = `kash_user_${email}`;
+            const existingUser = localStorage.getItem(userKey);
+
+            if (existingUser) {
+                // Usuario ya registrado → solo actualizar sesión activa y cargar sus datos
+                localStorage.setItem('kash_active_user', email);
+            } else {
+                // Usuario nuevo → crear entrada limpia con sus datos básicos
+                localStorage.setItem(userKey, JSON.stringify({
+                    balance: 0,
+                    expenses: [],
+                    savings: [],
+                    investments: [],
+                    lastMonthTotal: 0,
+                    userName: name,
+                    userEmail: email
+                }));
+                localStorage.setItem('kash_active_user', email);
+            }
+
+            window.location.href = 'app.html';
+        }
 
         // Lógica de la Calculadora de Gancho (Enganche interactivo)
         function calcularGancho() {
