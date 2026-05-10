@@ -44,9 +44,9 @@ function loadState() {
             if (parsed.lastMonthTotal !== undefined) state.lastMonthTotal = parsed.lastMonthTotal;
             if (parsed.userName) state.userName = parsed.userName;
             if (parsed.userEmail) state.userEmail = parsed.userEmail;
-            if (parsed.expenses) state.expenses = parsed.expenses.map(e => ({...e, date: new Date(e.date)}));
-            if (parsed.savings) state.savings = parsed.savings.map(s => ({...s, date: new Date(s.date)}));
-            if (parsed.investments) state.investments = parsed.investments.map(i => ({...i, date: new Date(i.date)}));
+            if (parsed.expenses) state.expenses = parsed.expenses.map(e => ({ ...e, date: new Date(e.date) }));
+            if (parsed.savings) state.savings = parsed.savings.map(s => ({ ...s, date: new Date(s.date) }));
+            if (parsed.investments) state.investments = parsed.investments.map(i => ({ ...i, date: new Date(i.date) }));
         } catch (e) { console.error("Error loading state", e); }
     }
 }
