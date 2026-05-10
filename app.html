@@ -20,11 +20,13 @@
             <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
                 <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
                     <label style="font-size: 11px; color: var(--text-secondary);">Inicio</label>
-                    <input type="date" id="date-from" oninput="applyDateRangeFilter()" style="padding: 7px 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px; width: 100%; font-family: 'Outfit', sans-serif;">
+                    <input type="date" id="date-from" oninput="applyDateRangeFilter()"
+                        style="padding: 7px 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px; width: 100%; font-family: 'Outfit', sans-serif;">
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
                     <label style="font-size: 11px; color: var(--text-secondary);">Fin</label>
-                    <input type="date" id="date-to" oninput="applyDateRangeFilter()" style="padding: 7px 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px; width: 100%; font-family: 'Outfit', sans-serif;">
+                    <input type="date" id="date-to" oninput="applyDateRangeFilter()"
+                        style="padding: 7px 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: white; font-size: 13px; width: 100%; font-family: 'Outfit', sans-serif;">
                 </div>
             </div>
 
@@ -126,7 +128,8 @@
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h3 style="margin: 0;">Mis Metas</h3>
-                <button onclick="toggleModal('goal-modal', true)" style="background: none; border: 1px solid var(--accent-blue); color: var(--accent-blue); border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                <button onclick="toggleModal('goal-modal', true)"
+                    style="background: none; border: 1px solid var(--accent-blue); color: var(--accent-blue); border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif;">
                     + Nueva Meta
                 </button>
             </div>
@@ -263,7 +266,8 @@
                     <input type="number" id="goal-target" placeholder="ej. 4000000">
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn" style="background: #334155;" onclick="toggleModal('goal-modal', false)">Cancelar</button>
+                    <button class="btn" style="background: #334155;"
+                        onclick="toggleModal('goal-modal', false)">Cancelar</button>
                     <button class="btn btn-primary" onclick="addGoal()">Guardar</button>
                 </div>
             </div>
