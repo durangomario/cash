@@ -5,6 +5,7 @@ const state = {
     expenses: [],
     savings: [],
     investments: [],
+    goals: [],
     get totalSavings() { return this.savings.reduce((a, b) => a + b.amount, 0); },
     get portfolio() { return this.investments.reduce((a, b) => a + b.amount, 0); },
     lastMonthTotal: 0,
@@ -31,7 +32,8 @@ function saveState() {
         investments: state.investments,
         lastMonthTotal: state.lastMonthTotal,
         userName: state.userName,
-        userEmail: state.userEmail
+        userEmail: state.userEmail,
+        goals: state.goals
     }));
 }
 
@@ -44,6 +46,7 @@ function loadState() {
             if (parsed.lastMonthTotal !== undefined) state.lastMonthTotal = parsed.lastMonthTotal;
             if (parsed.userName) state.userName = parsed.userName;
             if (parsed.userEmail) state.userEmail = parsed.userEmail;
+            if (parsed.goals) state.goals = parsed.goals;
             if (parsed.expenses) state.expenses = parsed.expenses.map(e => ({ ...e, date: new Date(e.date) }));
             if (parsed.savings) state.savings = parsed.savings.map(s => ({ ...s, date: new Date(s.date) }));
             if (parsed.investments) state.investments = parsed.investments.map(i => ({ ...i, date: new Date(i.date) }));
@@ -320,36 +323,91 @@ function editExpense(id) {
 
 // ---- Pantalla 3: Ahorro ----
 function renderAhorro() {
-    let metaTotal = 4000000;
-    let porcentaje = Math.min(100, (state.totalSavings / metaTotal) * 100);
+    const goalsList = document.getElementById('goals-list');
+    if (!goalsList) return;
 
-    const progressBar = document.getElementById('goal-progress-bar');
-    const goalSaved = document.getElementById('goal-saved');
-    if (progressBar && goalSaved) {
-        progressBar.style.width = `${porcentaje}%`;
-        progressBar.parentElement.previousElementSibling.lastElementChild.innerText = `${porcentaje.toFixed(0)}%`;
-        goalSaved.innerText = formatMoney(state.totalSavings);
+    if (state.goals.length === 0) {
+        goalsList.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                <p style="font-size: 32px; margin-bottom: 10px;">🎯</p>
+                <p style="font-size: 14px;">Aún no tienes metas. ¡Agrega una!</p>
+            </div>`;
+        return;
     }
 
-    const savingsList = document.getElementById('savings-list');
-    if (savingsList) {
-        savingsList.innerHTML = state.savings.length === 0 ? '' : `
-            <h4 style="margin-bottom: 10px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">Últimos Abonos</h4>
-            ${state.savings.map(s => `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div>
-                        <p style="font-size: 14px; font-weight: bold; color: var(--safe);">+${formatMoney(s.amount)}</p>
-                        <p style="font-size: 12px; color: var(--text-secondary);">${s.date.toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                        <button onclick="editSaving(${s.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 5px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
-                        <button onclick="deleteSaving(${s.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
-                    </div>
+    goalsList.innerHTML = state.goals.map(g => {
+        const pct = Math.min(100, Math.round((g.saved / g.target) * 100));
+        const barColor = pct >= 100 ? 'var(--safe)' : 'var(--accent-blue)';
+        return `
+        <div class="card" style="margin-bottom: 14px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 22px;">${g.emoji}</span>
+                    <span style="font-weight: 600;">${g.name}</span>
                 </div>
-            `).join('')}
-        `;
-        lucide.createIcons();
-    }
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: ${barColor}; font-weight: bold; font-size: 13px;">${pct}%</span>
+                    <button onclick="deleteGoal(${g.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar meta">
+                        <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" style="width: ${pct}%; background: ${barColor};"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                <p style="font-size: 12px; color: var(--text-secondary);">
+                    ${formatMoney(g.saved)} de ${formatMoney(g.target)}
+                </p>
+                ${pct < 100 ? `<button onclick="addSavingToGoal(${g.id})" style="padding: 5px 12px; border-radius: 8px; background: rgba(56,189,248,0.15); border: 1px solid var(--accent-blue); color: var(--accent-blue); cursor: pointer; font-size: 12px; font-family: 'Outfit', sans-serif;">+ Abonar</button>` : `<span style="font-size: 12px; color: var(--safe);">✅ ¡Meta lograda!</span>`}
+            </div>
+        </div>`;
+    }).join('');
+
+    lucide.createIcons();
+}
+
+function addGoal() {
+    const name = document.getElementById('goal-name').value.trim();
+    const target = parseFloat(document.getElementById('goal-target').value);
+    const emoji = document.getElementById('goal-emoji').value.trim() || '🎯';
+
+    if (!name || isNaN(target) || target <= 0) return alert('Ingresa un nombre y un monto válido.');
+
+    state.goals.push({ id: Date.now(), name, target, emoji, saved: 0 });
+    saveState();
+    toggleModal('goal-modal', false);
+    document.getElementById('goal-name').value = '';
+    document.getElementById('goal-target').value = '';
+    document.getElementById('goal-emoji').value = '';
+    renderAhorro();
+}
+
+function deleteGoal(id) {
+    if (!confirm('¿Eliminar esta meta? Los abonos realizados NO regresan al saldo.')) return;
+    state.goals = state.goals.filter(g => g.id !== id);
+    saveState();
+    renderAhorro();
+    renderInicio();
+}
+
+function addSavingToGoal(id) {
+    const goal = state.goals.find(g => g.id === id);
+    if (!goal) return;
+
+    const amountStr = prompt(`¿Cuánto deseas abonar a "${goal.name}"? (Se descontará de tu saldo disponible)`);
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert('Monto inválido.');
+    if (state.balance < amount) return alert('No tienes suficiente saldo disponible.');
+
+    state.balance -= amount;
+    goal.saved += amount;
+    state.savings.unshift({ id: Date.now(), amount, date: new Date() });
+    saveState();
+    renderAhorro();
+    renderInicio();
+    alert(`¡Abonaste ${formatMoney(amount)} a tu meta "${goal.name}"!`);
 }
 
 function calculateSavings() {
@@ -361,6 +419,7 @@ function calculateSavings() {
     const total = amount * months;
     document.getElementById('calc-result').innerText = `En ${months} meses tendrías ${formatMoney(total)} ahorrados.`;
 }
+
 
 // ---- Pantalla 4: Inversión ----
 function renderInversion() {
