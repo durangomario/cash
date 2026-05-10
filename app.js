@@ -99,8 +99,22 @@ function renderInicio() {
     const usernameEl = document.getElementById('home-username');
     if (usernameEl) usernameEl.innerText = state.userName || 'amigo';
 
-    // Notificación aleatoria
-    const randomNotif = state.notifications[Math.floor(Math.random() * state.notifications.length)];
+    // Notificaciones dinámicas basadas en datos reales
+    const metaTotal = 4000000;
+    const pctMeta = Math.min(100, Math.round((state.totalSavings / metaTotal) * 100));
+    const ahorroRestante = metaTotal - state.totalSavings;
+
+    const dynamicNotifications = [
+        `💡 Si reduces tus comidas fuera de casa esta semana, podrías ahorrar $40,000 adicionales.`,
+        currentExpenses > state.lastMonthTotal
+            ? `⚠️ Has gastado más que el mes pasado. ¡Revisa tus gastos!`
+            : `🔥 ¡Vas excelente! Has gastado menos que el mes pasado a esta misma fecha.`,
+        pctMeta >= 100
+            ? `🏆 ¡Felicitaciones! Ya alcanzaste tu meta de ${formatMoney(metaTotal)}.`
+            : `🎯 Estás a un ${pctMeta}% de lograr tu meta. Te faltan ${formatMoney(ahorroRestante)} para llegar a ${formatMoney(metaTotal)}.`
+    ];
+
+    const randomNotif = dynamicNotifications[Math.floor(Math.random() * dynamicNotifications.length)];
     document.getElementById('smart-notifications').innerHTML = `
         <div class="notification">
             <div class="notification-icon">
