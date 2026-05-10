@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASH - hola...esto es una prueba.. Toma el control de tu dinero universitario</title>
+    <link rel="stylesheet" href="landing.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <nav>
+            <div class="logo">KASH</div>
+        </nav>
+    </div>
+
+    <!-- 1. El Hero (Banner Principal) -->
+    <section class="hero">
+        <div class="container">
+            <h1>No dejes que tu dinero <br><span class="gradient-text">desaparezca a fin de mes.</span></h1>
+            <p>La primera app diseñada para que estudiantes universitarios aprendan a ahorrar, presupuestar e invertir
+                sin complicaciones. 100% gratis para correos .edu.</p>
+
+            <form class="hero-form" onsubmit="event.preventDefault(); window.location.href='app.html';">
+                <input type="email" placeholder="tu.correo@universidad.edu.co" required>
+                <button type="submit" class="btn-cta">Únete a la Lista VIP</button>
+            </form>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px;">Solo 500 cupos disponibles para el
+                acceso anticipado.</p>
+        </div>
+    </section>
+
+    <!-- 2. Beneficios y Ganchos (Calculadora) -->
+    <section class="benefits" id="beneficios">
+        <div class="container benefits-content">
+            <div>
+                <h2 style="font-size: 40px; margin-bottom: 20px;">Deja de perder plata.<br><span
+                        class="gradient-text">Descubre tu potencial.</span></h2>
+                <p style="color: var(--text-muted); font-size: 18px; margin-bottom: 30px;">
+                    ¿Sabías que esos dos cafés que compras en la cafetería cada semana podrían pagarte el viaje de
+                    grado? Usa nuestra calculadora y mira lo que podrías lograr si usas KASH.
+                </p>
+                <ul style="list-style: none; color: var(--text-muted); margin-bottom: 30px;">
+                    <li style="margin-bottom: 15px;"><i data-lucide="check-circle"
+                            style="color: var(--accent); vertical-align: middle; margin-right: 10px;"></i> 0% Comisiones
+                        por uso.</li>
+                    <li style="margin-bottom: 15px;"><i data-lucide="check-circle"
+                            style="color: var(--accent); vertical-align: middle; margin-right: 10px;"></i> Retos de
+                        ahorro semanales.</li>
+                    <li><i data-lucide="check-circle"
+                            style="color: var(--accent); vertical-align: middle; margin-right: 10px;"></i> Simulador de
+                        inversión seguro.</li>
+                </ul>
+            </div>
+
+            <!-- Calculadora Interactiva (El Gancho) -->
+            <div class="calculator-card">
+                <h3 style="margin-bottom: 25px; text-align: center;">¿Cuánto podrías ahorrar?</h3>
+
+                <div class="calc-input-group">
+                    <label>Si ahorro esto semanalmente: <span id="val-ahorro"
+                            style="color: white; font-weight: bold;">$20,000</span></label>
+                    <input type="range" id="slider-ahorro" min="5000" max="100000" step="5000" value="20000"
+                        oninput="calcularGancho()">
+                </div>
+
+                <div class="calc-input-group">
+                    <label>Durante este tiempo: <span id="val-tiempo" style="color: white; font-weight: bold;">12
+                            meses</span></label>
+                    <input type="range" id="slider-tiempo" min="3" max="48" step="1" value="12"
+                        oninput="calcularGancho()">
+                </div>
+
+                <div class="calc-result">
+                    <p style="color: var(--text-muted);">Con interés compuesto (Simulado 10% EA), tendrías:</p>
+                    <h3 id="resultado-gancho">$1,010,500</h3>
+                    <p style="font-size: 12px; color: var(--primary); margin-top: 10px;">¡Suficiente para un buen viaje!
+                        ✈️</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Cómo funciona (3 Pasos) -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 style="font-size: 40px;"><span class="gradient-text">Fácil, rápido y sin estrés.</span></h2>
+            <p style="color: var(--text-muted); font-size: 18px; margin-top: 10px;">Organiza tus finanzas en menos de lo
+                que dura tu clase.</p>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <i data-lucide="user-plus" class="step-icon"></i>
+                    <h3 style="margin-bottom: 15px;">1. Regístrate</h3>
+                    <p style="color: var(--text-muted);">Crea tu cuenta en 30 segundos con tu correo universitario. Sin
+                        papeleos ni filas en el banco.</p>
+                </div>
+                <div class="step-card">
+                    <i data-lucide="target" class="step-icon"></i>
+                    <h3 style="margin-bottom: 15px;">2. Configura tus Metas</h3>
+                    <p style="color: var(--text-muted);">Dinos qué quieres lograr (viaje, PC, ahorro libre) y KASH
+                        creará un plan automático para ti.</p>
+                </div>
+                <div class="step-card">
+                    <i data-lucide="trending-up" class="step-icon"></i>
+                    <h3 style="margin-bottom: 15px;">3. Aprende y Gana</h3>
+                    <p style="color: var(--text-muted);">Registra tus gastos, invierte en el simulador y gana
+                        experiencia financiera real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Prueba Social -->
+    <section class="social-proof">
+        <div class="container">
+            <h2 style="font-size: 40px;">Estudiantes que ya <span class="gradient-text">hackearon el sistema.</span>
+            </h2>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Logré ahorrar para mi intercambio a España sin tener que dejar de salir
+                        los fines de semana. ¡La gráfica de gastos de KASH me abrió los ojos!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Camila" alt="Camila"
+                            class="author-img">
+                        <div>
+                            <h4 style="font-size: 14px;">Camila R.</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Estudiante de Derecho</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"El simulador de inversiones es brutal. Me quitó el miedo a meter plata
+                        en un CDT real porque pude practicar con dinero ficticio primero."</p>
+                    <div class="testimonial-author">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mateo" alt="Mateo" class="author-img">
+                        <div>
+                            <h4 style="font-size: 14px;">Mateo P.</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Estudiante de Ingeniería</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Antes la plata se me iba en domicilios y no sabía por qué. Ahora uso
+                        los retos de KASH y tengo un fondo de emergencia real."</p>
+                    <div class="testimonial-author">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia" alt="Sofia" class="author-img">
+                        <div>
+                            <h4 style="font-size: 14px;">Sofía G.</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">Estudiante de Diseño</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. FAQ -->
+    <section class="faq">
+        <div class="container">
+            <h2>Preguntas Frecuentes</h2>
+
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+                <div class="faq-question">
+                    <span>¿Tiene algún costo descargar KASH?</span>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    No, KASH es 100% gratuita para estudiantes activos con correo universitario institucional. Nuestra
+                    misión es la educación financiera.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+                <div class="faq-question">
+                    <span>¿Es seguro? ¿Tengo que conectar mi banco real?</span>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Por tu seguridad, KASH funciona de manera aislada. No pedimos tus contraseñas bancarias ni nos
+                    conectamos a tu banco real. Tú registras tus movimientos o usas nuestro simulador ficticio para
+                    aprender.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+                <div class="faq-question">
+                    <span>No sé nada de matemáticas ni finanzas, ¿me sirve?</span>
+                    <i data-lucide="chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    ¡Por supuesto! KASH está diseñada específicamente para principiantes. Nuestra sección "KASH Edu" te
+                    enseñará todo con lenguaje simple, cero tecnicismos y videos cortos.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h2>KASH</h2>
+            <p style="margin-top: 10px;">Finanzas para Universitarios, sin rodeos.</p>
+            <p style="margin-top: 30px; font-size: 12px;">© 2026 KASH App. Proyecto Académico.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar Iconos
+        lucide.createIcons();
+
+        // Lógica de la Calculadora de Gancho (Enganche interactivo)
+        function calcularGancho() {
+            const ahorroSemanal = parseInt(document.getElementById('slider-ahorro').value);
+            const meses = parseInt(document.getElementById('slider-tiempo').value);
+
+            // Actualizar labels
+            document.getElementById('val-ahorro').innerText = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(ahorroSemanal);
+            document.getElementById('val-tiempo').innerText = meses + (meses === 1 ? " mes" : " meses");
+
+            // Cálculo (Ahorro semanal * 4 semanas aprox) * meses + un 10% simulado de interés simple sobre el total final para emocionar
+            const ahorroMensual = ahorroSemanal * 4;
+            let totalBase = ahorroMensual * meses;
+            // Simulamos que el interés le dio un poco más
+            let totalConInteres = totalBase * 1.05; // 5% extra simulado
+
+            document.getElementById('resultado-gancho').innerText = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(totalConInteres);
+        }
+
+        // Ejecutar cálculo inicial
+        calcularGancho();
+    </script>
+</body>
+
+</html>

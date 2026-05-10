@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+:root {
+    --bg-dark: #0B1120;
+    --bg-light: #1E293B;
+    --primary: #38BDF8;
+    --secondary: #7DD3FC;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --accent: #10B981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Typography */
+h1, h2, h3 {
+    line-height: 1.2;
+}
+
+.gradient-text {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+.btn-cta {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--bg-dark);
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 800;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+/* 1. Hero Section */
+.hero {
+    padding: 100px 0 60px;
+    text-align: center;
+    background: radial-gradient(circle at top right, rgba(30, 41, 59, 0.8), var(--bg-dark));
+}
+
+.hero h1 {
+    font-size: clamp(40px, 5vw, 64px);
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 20px;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+.hero-form {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.hero-form input {
+    flex: 1;
+    padding: 16px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+/* 2. Benefits & Hook (Calculator) */
+.benefits {
+    padding: 80px 0;
+    background-color: var(--bg-light);
+}
+
+.benefits-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.calculator-card {
+    background: var(--bg-dark);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.calc-input-group {
+    margin-bottom: 20px;
+}
+
+.calc-input-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+}
+
+.calc-input-group input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary);
+}
+
+.calc-result {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.calc-result h3 {
+    font-size: 48px;
+    color: var(--accent);
+}
+
+/* 3. How it Works */
+.how-it-works {
+    padding: 100px 0;
+    text-align: center;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.step-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 40px 30px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.step-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: inline-block;
+    padding: 20px;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 50%;
+    color: var(--primary);
+}
+
+/* 4. Social Proof */
+.social-proof {
+    padding: 80px 0;
+    background-color: var(--bg-light);
+    text-align: center;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.testimonial-card {
+    background: var(--bg-dark);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.testimonial-text {
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.author-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+/* 5. FAQ */
+.faq {
+    padding: 100px 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq h2 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+.faq-answer {
+    margin-top: 15px;
+    color: var(--text-muted);
+    display: none; /* simple display toggle in js */
+}
+
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 40px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-form {
+        flex-direction: column;
+    }
+    
+    .benefits-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+}

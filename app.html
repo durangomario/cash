@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KASH - Prototipo</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 1. INICIO -->
+        <section id="screen-inicio" class="screen active">
+            <h1 style="font-size: 24px; margin-bottom: 5px;">Hola, Liz👋</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Este es tu resumen de hoy.</p>
+
+            <div class="summary-grid">
+                <div class="summary-card primary">
+                    <p
+                        style="color: var(--text-secondary); font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                        Dinero Disponible
+                        <span>
+                            <button onclick="editBalance()"
+                                style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 5px;"
+                                title="Editar Saldo"><i data-lucide="edit-2"
+                                    style="width: 16px; height: 16px;"></i></button>
+                            <button onclick="addIncome()"
+                                style="background: none; border: none; color: var(--accent-blue); cursor: pointer;"
+                                title="Agregar Ingreso"><i data-lucide="plus-circle"
+                                    style="width: 16px; height: 16px;"></i></button>
+                        </span>
+                    </p>
+                    <h2 id="home-balance" style="font-size: 36px; margin: 5px 0;">$0</h2>
+                </div>
+                <div class="summary-card">
+                    <p style="color: var(--text-secondary); font-size: 12px;">Gastos (Mes)</p>
+                    <h3 id="home-expenses" style="color: var(--danger);">$0</h3>
+                </div>
+                <div class="summary-card">
+                    <p
+                        style="color: var(--text-secondary); font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        Ahorro Total
+                        <button onclick="addSavings()"
+                            style="background: none; border: none; color: var(--safe); cursor: pointer;"
+                            title="Agregar Ahorro"><i data-lucide="plus-circle"
+                                style="width: 16px; height: 16px;"></i></button>
+                    </p>
+                    <h3 id="home-savings" style="color: var(--safe);">$0</h3>
+                </div>
+            </div>
+
+            <h3>Notificaciones Inteligentes</h3>
+            <div class="card" id="smart-notifications" style="padding: 10px;">
+                <!-- Dinámico -->
+            </div>
+        </section>
+
+        <!-- 2. GASTOS -->
+        <section id="screen-gastos" class="screen">
+            <h1>Tus Gastos</h1>
+
+            <button class="btn"
+                style="background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.5); margin-bottom: 20px;"
+                onclick="toggleModal('expense-modal', true)">
+                <i data-lucide="minus-circle" style="vertical-align: middle; margin-right: 5px;"></i> Registrar Gasto
+            </button>
+
+            <div class="card" style="margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <p style="color: var(--text-secondary);">Total este mes</p>
+                    <span id="expense-trend"
+                        style="font-size: 12px; padding: 4px 8px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: var(--safe);">
+                        📉 15% menos
+                    </span>
+                </div>
+                <h2 id="gastos-total" style="font-size: 32px; margin: 10px 0;">$0</h2>
+
+                <!-- Gráfica CSS -->
+                <div class="chart-container" id="expense-chart">
+                    <!-- Barras dinámicas -->
+                </div>
+            </div>
+
+            <div class="card" id="expense-recommendation"
+                style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
+                <!-- Recomendación dinámica -->
+            </div>
+
+            <h3 style="margin-top: 20px;">Últimos Movimientos</h3>
+            <div id="expenses-list">
+                <!-- Dinámico -->
+            </div>
+        </section>
+
+        <!-- 3. AHORRO -->
+        <section id="screen-ahorro" class="screen">
+            <h1>Ahorro y Metas</h1>
+
+            <div class="card">
+                <h3>Calculadora de Ahorro</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="number" id="calc-amount" placeholder="Monto mensual"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white;">
+                    <input type="number" id="calc-months" placeholder="Meses"
+                        style="width: 80px; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white;">
+                </div>
+                <button class="btn btn-primary" style="padding: 10px;" onclick="calculateSavings()">Simular</button>
+                <p id="calc-result"
+                    style="margin-top: 10px; text-align: center; color: var(--accent-blue); font-weight: bold;"></p>
+            </div>
+
+            <h3>Mis Metas</h3>
+            <div class="card">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>MacBook Pro</span>
+                    <span style="color: var(--accent-blue);">45%</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 45%;" id="goal-progress-bar"></div>
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;"><span
+                        id="goal-saved">$1.8M</span> de $4.0M COP</p>
+                <div style="text-align: center;">
+                    <button class="btn btn-primary" style="margin-top: 15px; padding: 10px;"
+                        onclick="addSavings()">Abonar a Meta</button>
+                </div>
+                <div id="savings-list" style="margin-top: 15px;"></div>
+            </div>
+
+            <h3>Retos Activos</h3>
+            <div class="card" style="border-left: 4px solid var(--warning);">
+                <h4>☕ Reto sin café (Semana 2)</h4>
+                <p style="font-size: 14px; color: var(--text-secondary);">Ahorro estimado: $35,000</p>
+            </div>
+
+            <h3>Vision Board</h3>
+            <div class="vision-board">
+                <div class="vision-item"><img src="assets/vision1.png" alt="Dream 1"></div>
+                <div class="vision-item"><img src="assets/vision2.png" alt="Dream 2"></div>
+                <div class="vision-item"><img src="assets/vision3.png" alt="Dream 3"></div>
+                <div class="vision-item"><img src="assets/vision4.png" alt="Dream 4"></div>
+            </div>
+        </section>
+
+        <!-- 4. INVERSIÓN (Aprender/Invertir) -->
+        <section id="screen-inversion" class="screen">
+            <h1>Invertir</h1>
+
+            <div class="card"
+                style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), var(--glass-bg)); border-color: var(--safe);">
+                <p style="color: var(--text-secondary);">Portafolio Ficticio</p>
+                <h2 id="inv-portfolio" style="font-size: 36px; margin: 5px 0;">$500.000</h2>
+                <p style="color: var(--safe); font-size: 14px;">+ 5.2% histórico</p>
+                <div id="investments-list" style="margin-top: 10px;"></div>
+            </div>
+
+            <h3>Simulador de Mercado</h3>
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h4>S&P 500 (Simulado)</h4>
+                        <p style="font-size: 12px; color: var(--text-secondary);">Riesgo: Medio</p>
+                    </div>
+                    <button class="btn btn-primary" style="width: auto; padding: 8px 16px;"
+                        onclick="simulateInvest('S&P 500')">Invertir</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4>CDT Estudiantil</h4>
+                        <p style="font-size: 12px; color: var(--text-secondary);">Riesgo: Bajo</p>
+                    </div>
+                    <button class="btn btn-primary" style="width: auto; padding: 8px 16px;"
+                        onclick="simulateInvest('CDT Estudiantil')">Invertir</button>
+                </div>
+            </div>
+
+            <h3>KASH Edu (Tips)</h3>
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 20px; background: rgba(56, 189, 248, 0.1);">
+                    <h4>💡 Tip del día</h4>
+                    <p style="font-size: 14px; margin-top: 10px;">El interés compuesto es tu mejor amigo. Si inviertes
+                        $50,000 mensuales a un 10% anual, en 5 años tendrás más del 20% en solo ganancias.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. PERFIL -->
+        <section id="screen-perfil" class="screen">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div
+                    style="width: 100px; height: 100px; border-radius: 50%; background: var(--secondary-bg); margin: 0 auto 15px; border: 3px solid var(--accent-blue); overflow: hidden;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar"
+                        style="width: 100%; height: 100%;">
+                </div>
+                <h2>Alex Estudiante</h2>
+                <p id="profile-level" style="color: var(--text-secondary);">Nivel 1: Novato</p>
+
+                <div class="progress-container" style="width: 200px; margin: 10px auto;">
+                    <div id="profile-progress" class="progress-bar" style="width: 0%;"></div>
+                </div>
+                <p id="profile-xp" style="font-size: 12px; color: var(--text-secondary);">0 / 500 XP</p>
+            </div>
+
+            <h3>Mis Logros</h3>
+            <div class="card">
+                <div class="badges-grid" id="badges-container">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" style="background: var(--secondary-bg); color: var(--danger);"
+                    onclick="window.location.href='index.html'">Cerrar Sesión (Demo)</button>
+            </div>
+        </section>
+
+        <!-- Menú Inferior -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchScreen('inicio')">
+                <i data-lucide="home"></i>
+                <span>Inicio</span>
+            </div>
+            <div class="nav-item" onclick="switchScreen('gastos')">
+                <i data-lucide="pie-chart"></i>
+                <span>Gastos</span>
+            </div>
+            <div class="nav-item" onclick="switchScreen('ahorro')">
+                <i data-lucide="target"></i>
+                <span>Ahorro</span>
+            </div>
+            <div class="nav-item" onclick="switchScreen('inversion')">
+                <i data-lucide="trending-up"></i>
+                <span>Invertir</span>
+            </div>
+            <div class="nav-item" onclick="switchScreen('perfil')">
+                <i data-lucide="user"></i>
+                <span>Perfil</span>
+            </div>
+        </nav>
+
+        <!-- Modal Agregar Gasto -->
+        <div class="modal-overlay" id="expense-modal">
+            <div class="modal-content">
+                <h3 style="margin-bottom: 20px;">Agregar Gasto</h3>
+                <div class="input-group">
+                    <label>Categoría</label>
+                    <select id="exp-category">
+                        <option value="Comida">🍔 Comida</option>
+                        <option value="Transporte">🚗 Transporte</option>
+                        <option value="Salidas">🎉 Salidas</option>
+                        <option value="Compras">🛍️ Compras</option>
+                        <option value="Otros">📦 Otros</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Monto (COP)</label>
+                    <input type="number" id="exp-amount" placeholder="Ej. 15000">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn" style="background: #334155;"
+                        onclick="toggleModal('expense-modal', false)">Cancelar</button>
+                    <button class="btn btn-primary" onclick="addExpense()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

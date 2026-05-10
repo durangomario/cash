@@ -1,0 +1,465 @@
+// Estado global de la aplicación (Datos Simulados)
+const state = {
+    currentScreen: 'inicio',
+    balance: 850000,
+    expenses: [
+        { id: 1, category: 'Comida', amount: 45000, date: new Date() },
+        { id: 2, category: 'Transporte', amount: 15000, date: new Date() },
+        { id: 3, category: 'Salidas', amount: 80000, date: new Date() }
+    ],
+    savings: [
+        { id: 1, amount: 450000, date: new Date() }
+    ],
+    investments: [],
+    get totalSavings() { return this.savings.reduce((a, b) => a + b.amount, 0); },
+    get portfolio() { return this.investments.reduce((a, b) => a + b.amount, 0); },
+    // Gastos del mes pasado (para comparación)
+    lastMonthTotal: 120000,
+    notifications: [
+        "💡 Si reduces tus comidas fuera de casa esta semana, podrías ahorrar $40,000 adicionales.",
+        "🔥 ¡Vas excelente! Has gastado 15% menos que el mes pasado a esta misma fecha.",
+        "🎯 Estás a un 45% de lograr tu meta: MacBook Pro."
+    ]
+};
+
+// Utilidad para formatear moneda
+const formatMoney = (amount) => {
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount);
+};
+
+function getExpenseIcon(cat) {
+    const icons = { 'Comida': '🍔', 'Transporte': '🚗', 'Salidas': '🎉', 'Compras': '🛍️', 'Otros': '📦' };
+    return icons[cat] || '💸';
+}
+
+// Navegación
+function switchScreen(screenId) {
+    state.currentScreen = screenId;
+
+    // UI Update
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(`screen-${screenId}`).classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.querySelector('span').innerText.toLowerCase() === screenId) {
+            item.classList.add('active');
+        } else if (screenId === 'inversion' && item.querySelector('span').innerText.toLowerCase() === 'invertir') {
+            item.classList.add('active');
+        }
+    });
+
+    // Renderizar datos de la pantalla activa
+    if (screenId === 'inicio') renderInicio();
+    if (screenId === 'gastos') renderGastos();
+    if (screenId === 'ahorro') renderAhorro();
+    if (screenId === 'inversion') renderInversion();
+    if (screenId === 'perfil') renderPerfil();
+}
+
+// ---- Pantalla 1: Inicio ----
+function renderInicio() {
+    // Calculamos gastos actuales
+    const currentExpenses = state.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+
+    document.getElementById('home-balance').innerText = formatMoney(state.balance);
+    document.getElementById('home-expenses').innerText = formatMoney(currentExpenses);
+    document.getElementById('home-savings').innerText = formatMoney(state.totalSavings);
+
+    // Notificación aleatoria
+    const randomNotif = state.notifications[Math.floor(Math.random() * state.notifications.length)];
+    document.getElementById('smart-notifications').innerHTML = `
+        <div class="notification">
+            <div class="notification-icon">
+                <i data-lucide="bell"></i>
+            </div>
+            <p style="font-size: 14px;">${randomNotif}</p>
+        </div>
+    `;
+    lucide.createIcons();
+}
+
+// ---- Pantalla 2: Gastos ----
+function renderGastos() {
+    const currentExpenses = state.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+    document.getElementById('gastos-total').innerText = formatMoney(currentExpenses);
+
+    // Render List
+    document.getElementById('expenses-list').innerHTML = state.expenses.map(e => `
+        <div class="expense-item">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div class="expense-icon">${getExpenseIcon(e.category)}</div>
+                <div>
+                    <h4>${e.category}</h4>
+                    <p style="font-size: 12px; color: var(--text-secondary);">${e.date.toLocaleDateString()}</p>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <h4 style="color: var(--danger);">-${formatMoney(e.amount)}</h4>
+                <div style="margin-top: 5px;">
+                    <button onclick="editExpense(${e.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 10px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                    <button onclick="deleteExpense(${e.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    // Gráfica CSS Simple (agrupación por categoría)
+    const chartContainer = document.getElementById('expense-chart');
+    const categories = [
+        { name: 'Comida', icon: '🍔' },
+        { name: 'Transporte', icon: '🚗' },
+        { name: 'Salidas', icon: '🎉' },
+        { name: 'Compras', icon: '🛍️' },
+        { name: 'Otros', icon: '📦' }
+    ];
+
+    const maxAmount = Math.max(...categories.map(c => state.expenses.filter(e => e.category === c.name).reduce((a, b) => a + b.amount, 0)), 50000);
+
+    chartContainer.innerHTML = categories.map(cat => {
+        const catTotal = state.expenses.filter(e => e.category === cat.name).reduce((a, b) => a + b.amount, 0);
+        const heightPercent = (catTotal / maxAmount) * 100;
+
+        let displayValue = '$0';
+        if (catTotal >= 1000) {
+            displayValue = '$' + (catTotal / 1000).toFixed(0) + 'k';
+        } else if (catTotal > 0) {
+            displayValue = '$' + catTotal;
+        }
+
+        return `
+            <div class="chart-bar-wrapper">
+                <span style="font-size: 10px; color: var(--accent-blue); font-weight: bold; margin-bottom: 4px;">${displayValue}</span>
+                <div class="chart-bar" style="height: ${heightPercent}%; ${heightPercent === 0 ? 'min-height: 2px;' : ''}"></div>
+                <span class="chart-label" style="font-size: 16px; margin-top: 5px;" title="${cat.name}">${cat.icon}</span>
+            </div>
+        `;
+    }).join('');
+
+    // Recomendación / Comparación
+    const trendEl = document.getElementById('expense-trend');
+    const recEl = document.getElementById('expense-recommendation');
+
+    if (currentExpenses > state.lastMonthTotal) {
+        trendEl.innerHTML = `📈 Más que el mes pasado`;
+        trendEl.style.color = "var(--danger)";
+        trendEl.style.background = "rgba(239, 68, 68, 0.2)";
+        recEl.innerHTML = `<p style="font-size: 14px;">⚠️ Has gastado más de lo habitual. Te recomendamos pausar las "Salidas" esta semana.</p>`;
+    } else {
+        trendEl.innerHTML = `📉 Menos que el mes pasado`;
+        trendEl.style.color = "var(--safe)";
+        trendEl.style.background = "rgba(16, 185, 129, 0.2)";
+        recEl.innerHTML = `<p style="font-size: 14px;">✅ ¡Buen trabajo! Mantén este ritmo y lograrás tu meta de ahorro más rápido.</p>`;
+    }
+
+    // Renderizar iconos
+    lucide.createIcons();
+}
+
+function toggleModal(modalId, show) {
+    document.getElementById(modalId).style.display = show ? 'flex' : 'none';
+}
+
+function addExpense() {
+    const category = document.getElementById('exp-category').value;
+    const amount = parseFloat(document.getElementById('exp-amount').value);
+
+    if (!amount || isNaN(amount)) return;
+
+    state.expenses.unshift({
+        id: Date.now(),
+        category,
+        amount,
+        date: new Date()
+    });
+
+    state.balance -= amount; // Restar del saldo disponible
+
+    toggleModal('expense-modal', false);
+    document.getElementById('exp-amount').value = '';
+
+    // Re-render si estamos en la pantalla de gastos
+    if (state.currentScreen === 'gastos') renderGastos();
+    // Actualizar inicio de fondo
+    renderInicio();
+
+    alert(`¡Has registrado un gasto de ${formatMoney(amount)} en ${category}!`);
+}
+
+function deleteExpense(id) {
+    const expenseIndex = state.expenses.findIndex(e => e.id === id);
+    if (expenseIndex === -1) return;
+
+    if (confirm("¿Seguro que deseas eliminar este gasto? El dinero regresará a tu saldo disponible.")) {
+        state.balance += state.expenses[expenseIndex].amount;
+        state.expenses.splice(expenseIndex, 1);
+
+        if (state.currentScreen === 'gastos') renderGastos();
+        if (state.currentScreen === 'inicio') renderInicio();
+    }
+}
+
+function editExpense(id) {
+    const expense = state.expenses.find(e => e.id === id);
+    if (!expense) return;
+
+    const amountStr = prompt(`Nuevo monto para ${expense.category}:`, expense.amount);
+    if (!amountStr) return;
+    const newAmount = parseFloat(amountStr);
+    if (isNaN(newAmount) || newAmount < 0) return alert("Monto inválido");
+
+    state.balance += expense.amount;
+    state.balance -= newAmount;
+    expense.amount = newAmount;
+
+    if (state.currentScreen === 'gastos') renderGastos();
+    if (state.currentScreen === 'inicio') renderInicio();
+}
+
+// ---- Pantalla 3: Ahorro ----
+function renderAhorro() {
+    let metaTotal = 4000000;
+    let porcentaje = Math.min(100, (state.totalSavings / metaTotal) * 100);
+
+    const progressBar = document.getElementById('goal-progress-bar');
+    const goalSaved = document.getElementById('goal-saved');
+    if (progressBar && goalSaved) {
+        progressBar.style.width = `${porcentaje}%`;
+        progressBar.parentElement.previousElementSibling.lastElementChild.innerText = `${porcentaje.toFixed(0)}%`;
+        goalSaved.innerText = formatMoney(state.totalSavings);
+    }
+
+    const savingsList = document.getElementById('savings-list');
+    if (savingsList) {
+        savingsList.innerHTML = state.savings.length === 0 ? '' : `
+            <h4 style="margin-bottom: 10px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">Últimos Abonos</h4>
+            ${state.savings.map(s => `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div>
+                        <p style="font-size: 14px; font-weight: bold; color: var(--safe);">+${formatMoney(s.amount)}</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">${s.date.toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                        <button onclick="editSaving(${s.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 5px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                        <button onclick="deleteSaving(${s.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        lucide.createIcons();
+    }
+}
+
+function calculateSavings() {
+    const amount = parseFloat(document.getElementById('calc-amount').value);
+    const months = parseInt(document.getElementById('calc-months').value);
+
+    if (!amount || !months) return;
+
+    const total = amount * months;
+    document.getElementById('calc-result').innerText = `En ${months} meses tendrías ${formatMoney(total)} ahorrados.`;
+}
+
+// ---- Pantalla 4: Inversión ----
+function renderInversion() {
+    document.getElementById('inv-portfolio').innerText = formatMoney(state.portfolio);
+
+    const invList = document.getElementById('investments-list');
+    if (invList) {
+        invList.innerHTML = state.investments.length === 0 ? '' : `
+            <h4 style="margin-bottom: 10px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">Mis Inversiones</h4>
+            ${state.investments.map(i => `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div>
+                        <p style="font-size: 14px; font-weight: bold;">${i.instrument}</p>
+                        <p style="font-size: 12px; color: var(--text-secondary);">${i.date.toLocaleDateString()}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="color: var(--safe); font-weight: bold; margin-bottom: 5px;">${formatMoney(i.amount)}</p>
+                        <div>
+                            <button onclick="editInvestment(${i.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 5px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                            <button onclick="deleteInvestment(${i.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        lucide.createIcons();
+    }
+}
+
+function simulateInvest(instrumentName) {
+    const amountStr = prompt(`¿Cuánto deseas invertir en ${instrumentName}? (COP)`);
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+
+    if (isNaN(amount) || amount <= 0) {
+        return alert("Monto inválido");
+    }
+
+    if (state.balance < amount) {
+        alert(`Necesitas al menos ${formatMoney(amount)} en tu saldo disponible para hacer esta inversión.`);
+        return;
+    }
+
+    state.balance -= amount;
+    state.investments.unshift({ id: Date.now(), instrument: instrumentName, amount: amount, date: new Date() });
+
+    renderInversion();
+    if (state.currentScreen === 'inicio') renderInicio();
+
+    alert(`¡Inversión simulada exitosa! ${formatMoney(amount)} añadidos a tu portafolio en ${instrumentName}.`);
+}
+
+function deleteInvestment(id) {
+    const index = state.investments.findIndex(i => i.id === id);
+    if (index === -1) return;
+
+    if (confirm("¿Seguro que deseas eliminar esta inversión? El dinero regresará a tu saldo disponible.")) {
+        state.balance += state.investments[index].amount;
+        state.investments.splice(index, 1);
+        renderInversion();
+        if (state.currentScreen === 'inicio') renderInicio();
+    }
+}
+
+function editInvestment(id) {
+    const inv = state.investments.find(i => i.id === id);
+    if (!inv) return;
+
+    const amountStr = prompt(`Nuevo monto para ${inv.instrument}:`, inv.amount);
+    if (!amountStr) return;
+    const newAmount = parseFloat(amountStr);
+    if (isNaN(newAmount) || newAmount < 0) return alert("Monto inválido");
+
+    state.balance += inv.amount;
+
+    if (state.balance < newAmount) {
+        state.balance -= inv.amount;
+        return alert("No tienes suficiente dinero disponible para esta inversión.");
+    }
+
+    state.balance -= newAmount;
+    inv.amount = newAmount;
+
+    renderInversion();
+    if (state.currentScreen === 'inicio') renderInicio();
+}
+
+// ---- Pantalla 5: Perfil ----
+function renderPerfil() {
+    let xp = (state.expenses.length * 10) + (state.savings.length * 50) + (state.investments.length * 100);
+    let level = Math.floor(xp / 500) + 1;
+    let currentLevelXp = xp % 500;
+    let progressPercent = (currentLevelXp / 500) * 100;
+
+    let levelTitle = level === 1 ? "Novato" : level < 5 ? "Ahorrador Frecuente" : "Inversor Pro";
+
+    const profileLvl = document.getElementById('profile-level');
+    if (profileLvl) {
+        profileLvl.innerText = `Nivel ${level}: ${levelTitle}`;
+        document.getElementById('profile-xp').innerText = `${currentLevelXp} / 500 XP (Total: ${xp} XP)`;
+        document.getElementById('profile-progress').style.width = `${progressPercent}%`;
+
+        const badges = [
+            { icon: '🐣', title: 'Primer Paso', unlocked: true },
+            { icon: '🎯', title: 'Meta Cumplida', unlocked: state.totalSavings >= 4000000 },
+            { icon: '📊', title: 'Rey del Presup.', unlocked: state.expenses.length >= 5 },
+            { icon: '💎', title: 'Inversor Pro', unlocked: state.investments.length >= 1 },
+            { icon: '🔥', title: 'Ahorrador Frec.', unlocked: state.savings.length >= 3 },
+            { icon: '🏆', title: 'KASH Master', unlocked: level >= 5 }
+        ];
+
+        document.getElementById('badges-container').innerHTML = badges.map(b => `
+            <div class="badge ${b.unlocked ? 'unlocked' : ''}">
+                <div class="badge-icon">${b.icon}</div>
+                <span class="badge-title" style="font-size: 11px;">${b.title}</span>
+            </div>
+        `).join('');
+    }
+}
+
+// ---- Ingresos, Ahorros y Balance ----
+function editBalance() {
+    const amountStr = prompt("Ingresa el nuevo saldo total disponible (sobrescribirá el actual):", state.balance);
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount < 0) return alert("Monto inválido");
+
+    state.balance = amount;
+    if (state.currentScreen === 'inicio') renderInicio();
+    alert(`Saldo actualizado a ${formatMoney(amount)}`);
+}
+
+function addIncome() {
+    const amountStr = prompt("¿Cuánto dinero quieres ingresar? (COP)");
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Monto inválido");
+
+    state.balance += amount;
+
+    if (state.currentScreen === 'inicio') renderInicio();
+    alert(`¡Has ingresado ${formatMoney(amount)} a tu saldo!`);
+}
+
+function addSavings() {
+    const amountStr = prompt("¿Cuánto deseas abonar a tu meta? (Se descontará de tu dinero disponible)");
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Monto inválido");
+
+    if (state.balance < amount) {
+        return alert("No tienes suficiente dinero disponible. ¡Añade ingresos primero!");
+    }
+
+    state.balance -= amount;
+    state.savings.unshift({ id: Date.now(), amount: amount, date: new Date() });
+
+    renderAhorro();
+    if (state.currentScreen === 'inicio') renderInicio();
+    alert(`¡Has abonado ${formatMoney(amount)} a tu meta de ahorro!`);
+}
+
+function deleteSaving(id) {
+    const index = state.savings.findIndex(s => s.id === id);
+    if (index === -1) return;
+
+    if (confirm("¿Seguro que deseas eliminar este abono? El dinero regresará a tu saldo disponible.")) {
+        state.balance += state.savings[index].amount;
+        state.savings.splice(index, 1);
+        renderAhorro();
+        if (state.currentScreen === 'inicio') renderInicio();
+    }
+}
+
+function editSaving(id) {
+    const saving = state.savings.find(s => s.id === id);
+    if (!saving) return;
+
+    const amountStr = prompt(`Nuevo monto para este abono:`, saving.amount);
+    if (!amountStr) return;
+    const newAmount = parseFloat(amountStr);
+    if (isNaN(newAmount) || newAmount < 0) return alert("Monto inválido");
+
+    state.balance += saving.amount;
+
+    if (state.balance < newAmount) {
+        state.balance -= saving.amount;
+        return alert("No tienes suficiente dinero disponible para este nuevo abono.");
+    }
+
+    state.balance -= newAmount;
+    saving.amount = newAmount;
+
+    renderAhorro();
+    if (state.currentScreen === 'inicio') renderInicio();
+}
+
+// Inicialización
+window.onload = () => {
+    renderInicio();
+    renderAhorro();
+    renderInversion();
+    renderPerfil();
+};
