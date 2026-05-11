@@ -8,6 +8,7 @@ const state = {
     goals: [
         { id: 1, name: 'MacBook Pro', target: 4000000, current: 1800000 }
     ],
+    showSavingsList: true,
     get totalSavings() { return this.savings.reduce((a, b) => a + b.amount, 0); },
     get portfolio() { return this.investments.reduce((a, b) => a + b.amount, 0); },
     lastMonthTotal: 0,
@@ -33,6 +34,7 @@ function saveState() {
         savings: state.savings,
         investments: state.investments,
         goals: state.goals,
+        showSavingsList: state.showSavingsList,
         lastMonthTotal: state.lastMonthTotal,
         userName: state.userName,
         userEmail: state.userEmail
@@ -52,6 +54,7 @@ function loadState() {
             if (parsed.savings) state.savings = parsed.savings.map(s => ({ ...s, date: new Date(s.date) }));
             if (parsed.investments) state.investments = parsed.investments.map(i => ({ ...i, date: new Date(i.date) }));
             if (parsed.goals) state.goals = parsed.goals;
+            if (parsed.showSavingsList !== undefined) state.showSavingsList = parsed.showSavingsList;
         } catch (e) { console.error("Error loading state", e); }
     }
 }
@@ -325,6 +328,12 @@ function editExpense(id) {
 }
 
 // ---- Pantalla 3: Ahorro ----
+function toggleSavingsList() {
+    state.showSavingsList = !state.showSavingsList;
+    renderAhorro();
+    saveState();
+}
+
 function renderAhorro() {
     // Renderizar metas dinámicamente
     const goalsContainer = document.getElementById('goals-container');
@@ -368,21 +377,49 @@ function renderAhorro() {
 
     const savingsList = document.getElementById('savings-list');
     if (savingsList) {
-        savingsList.innerHTML = state.savings.length === 0 ? '' : `
-            <h4 style="margin-bottom: 10px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">Últimos Abonos</h4>
-            ${state.savings.map(s => `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div>
-                        <p style="font-size: 14px; font-weight: bold; color: var(--safe);">+${formatMoney(s.amount)}</p>
-                        <p style="font-size: 12px; color: var(--text-secondary);">${s.date.toLocaleDateString()}</p>
+        if (state.savings.length === 0 || !state.showSavingsList) {
+            if (state.savings.length > 0) {
+                // Mostrar solo el botón para expandir si hay abonos pero están ocultos
+                savingsList.innerHTML = `
+                    <div style="text-align: center; padding: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <button class="btn" style="background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue); width: 100%;"
+                                onclick="toggleSavingsList()">
+                            <i data-lucide="chevron-down" style="vertical-align: middle; margin-right: 5px;"></i> 
+                            Mostrar Últimos Abonos (${state.savings.length})
+                        </button>
                     </div>
-                    <div>
-                        <button onclick="editSaving(${s.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 5px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
-                        <button onclick="deleteSaving(${s.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                `;
+            } else {
+                savingsList.innerHTML = '';
+            }
+        } else {
+            // Mostrar los abonos con opción de ocultar
+            savingsList.innerHTML = `
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="margin: 0; font-size: 14px;">Últimos Abonos</h4>
+                        <button onclick="toggleSavingsList()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;" title="Ocultar">
+                            <i data-lucide="chevron-up" style="width: 14px; height: 14px;"></i>
+                        </button>
                     </div>
+                    ${state.savings.map(s => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div>
+                                <p style="font-size: 14px; font-weight: bold; color: var(--safe);">
+                                    +${formatMoney(s.amount)}
+                                    ${s.goalName ? `<span style="font-size: 11px; color: var(--text-secondary); margin-left: 5px;">→ ${s.goalName}</span>` : ''}
+                                </p>
+                                <p style="font-size: 12px; color: var(--text-secondary);">${s.date.toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                                <button onclick="editSaving(${s.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 5px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                                <button onclick="deleteSaving(${s.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
-            `).join('')}
-        `;
+            `;
+        }
         lucide.createIcons();
     }
 }
