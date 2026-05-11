@@ -122,6 +122,7 @@ function switchScreen(screenId) {
     if (screenId === 'gastos') renderGastos();
     if (screenId === 'ahorro') renderAhorro();
     if (screenId === 'inversion') renderInversion();
+    if (screenId === 'calculadora') renderCalculadora();
     if (screenId === 'perfil') renderPerfil();
 }
 
@@ -394,6 +395,76 @@ function calculateSavings() {
 
     const total = amount * months;
     document.getElementById('calc-result').innerText = `En ${months} meses tendrías ${formatMoney(total)} ahorrados.`;
+}
+
+function simulateScenario(target, type) {
+    const monthlyOptions = {
+        'laptop': [200000, 300000, 500000],
+        'viaje': [300000, 500000, 800000],
+        'semestre': [150000, 250000, 400000]
+    };
+
+    const typeNames = {
+        'laptop': 'Laptop',
+        'viaje': 'Viaje',
+        'semestre': 'Semestre'
+    };
+
+    const monthlyAmounts = monthlyOptions[type] || [200000, 300000, 500000];
+    const typeName = typeNames[type] || 'Meta';
+
+    let resultHTML = `
+        <div class="card" style="background: rgba(56, 189, 248, 0.1); border-color: var(--accent-blue);">
+            <h4 style="margin-bottom: 15px;">🎯 Plan para ${typeName} - ${formatMoney(target)}</h4>
+            <div style="margin-bottom: 20px;">
+                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;">Opciones de ahorro mensual:</p>
+    `;
+
+    monthlyAmounts.forEach(monthly => {
+        const months = Math.ceil(target / monthly);
+        const total = monthly * months;
+        resultHTML += `
+            <div style="padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-weight: bold; color: var(--accent-blue);">${formatMoney(monthly)}/mes</span>
+                        <span style="font-size: 12px; color: var(--text-secondary); margin-left: 10px;">${months} meses</span>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;" 
+                            onclick="applyScenario(${target}, ${monthly}, '${typeName}')">Aplicar</button>
+                </div>
+            </div>
+        `;
+    });
+
+    resultHTML += `
+            </div>
+            <p style="font-size: 12px; color: var(--text-secondary); text-align: center;">
+                💡 Tip: Puedes ajustar estos valores en la calculadora personalizada arriba
+            </p>
+        </div>
+    `;
+
+    document.getElementById('scenario-result').innerHTML = resultHTML;
+    lucide.createIcons();
+}
+
+function applyScenario(target, monthly, typeName) {
+    const months = Math.ceil(target / monthly);
+    document.getElementById('calc-amount').value = monthly;
+    document.getElementById('calc-months').value = months;
+    calculateSavings();
+    
+    // Scroll hacia la calculadora
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderCalculadora() {
+    // Limpiar resultados previos
+    document.getElementById('calc-result').innerText = '';
+    document.getElementById('scenario-result').innerHTML = '';
+    document.getElementById('calc-amount').value = '';
+    document.getElementById('calc-months').value = '';
 }
 
 // ---- Pantalla 4: Inversión ----
@@ -746,5 +817,6 @@ window.onload = () => {
     renderInicio();
     renderAhorro();
     renderInversion();
+    renderCalculadora();
     renderPerfil();
 };
