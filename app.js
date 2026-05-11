@@ -5,6 +5,9 @@ const state = {
     expenses: [],
     savings: [],
     investments: [],
+    goals: [
+        { id: 1, name: 'MacBook Pro', target: 4000000, current: 1800000 }
+    ],
     get totalSavings() { return this.savings.reduce((a, b) => a + b.amount, 0); },
     get portfolio() { return this.investments.reduce((a, b) => a + b.amount, 0); },
     lastMonthTotal: 0,
@@ -29,6 +32,7 @@ function saveState() {
         expenses: state.expenses,
         savings: state.savings,
         investments: state.investments,
+        goals: state.goals,
         lastMonthTotal: state.lastMonthTotal,
         userName: state.userName,
         userEmail: state.userEmail
@@ -47,6 +51,7 @@ function loadState() {
             if (parsed.expenses) state.expenses = parsed.expenses.map(e => ({ ...e, date: new Date(e.date) }));
             if (parsed.savings) state.savings = parsed.savings.map(s => ({ ...s, date: new Date(s.date) }));
             if (parsed.investments) state.investments = parsed.investments.map(i => ({ ...i, date: new Date(i.date) }));
+            if (parsed.goals) state.goals = parsed.goals;
         } catch (e) { console.error("Error loading state", e); }
     }
 }
@@ -320,15 +325,39 @@ function editExpense(id) {
 
 // ---- Pantalla 3: Ahorro ----
 function renderAhorro() {
-    let metaTotal = 4000000;
-    let porcentaje = Math.min(100, (state.totalSavings / metaTotal) * 100);
-
-    const progressBar = document.getElementById('goal-progress-bar');
-    const goalSaved = document.getElementById('goal-saved');
-    if (progressBar && goalSaved) {
-        progressBar.style.width = `${porcentaje}%`;
-        progressBar.parentElement.previousElementSibling.lastElementChild.innerText = `${porcentaje.toFixed(0)}%`;
-        goalSaved.innerText = formatMoney(state.totalSavings);
+    // Renderizar metas dinámicamente
+    const goalsContainer = document.getElementById('goals-container');
+    if (goalsContainer) {
+        if (state.goals.length === 0) {
+            goalsContainer.innerHTML = `
+                <div class="card" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                    <p>No tienes metas configuradas aún.</p>
+                    <p style="font-size: 12px; margin-top: 5px;">¡Agrega tu primera meta para empezar a ahorrar!</p>
+                </div>
+            `;
+        } else {
+            goalsContainer.innerHTML = state.goals.map(goal => {
+                const porcentaje = Math.min(100, (goal.current / goal.target) * 100);
+                return `
+                    <div class="card" style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4 style="margin: 0;">${goal.name}</h4>
+                            <div>
+                                <button onclick="deleteGoal(${goal.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar meta"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span style="color: var(--accent-blue); font-weight: bold;">${porcentaje.toFixed(0)}%</span>
+                            <span style="font-size: 12px; color: var(--text-secondary);">${formatMoney(goal.current)} de ${formatMoney(goal.target)}</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${porcentaje}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        lucide.createIcons();
     }
 
     const savingsList = document.getElementById('savings-list');
@@ -582,6 +611,50 @@ function editSaving(id) {
 
     renderAhorro();
     if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
+}
+
+// ---- Funciones para Metas ----
+function addGoal() {
+    const name = prompt("¿Cuál es tu meta? (Ej: Viaje a Europa, Nuevo Celular)");
+    if (!name || !name.trim()) return;
+
+    const targetStr = prompt("¿Cuál es el monto objetivo para esta meta? (COP)");
+    if (!targetStr) return;
+    const target = parseFloat(targetStr);
+    if (isNaN(target) || target <= 0) return alert("Monto inválido");
+
+    const newGoal = {
+        id: Date.now(),
+        name: name.trim(),
+        target: target,
+        current: 0
+    };
+
+    state.goals.push(newGoal);
+    renderAhorro();
+    saveState();
+    alert(`¡Meta "${newGoal.name}" agregada con éxito!`);
+}
+
+function deleteGoal(id) {
+    const goalIndex = state.goals.findIndex(g => g.id === id);
+    if (goalIndex === -1) return;
+
+    const goal = state.goals[goalIndex];
+    if (confirm(`¿Seguro que deseas eliminar la meta "${goal.name}"? Se perderá el progreso actual.`)) {
+        state.goals.splice(goalIndex, 1);
+        renderAhorro();
+        saveState();
+    }
+}
+
+function updateGoalProgress(id, amount) {
+    const goal = state.goals.find(g => g.id === id);
+    if (!goal) return;
+    
+    goal.current = Math.min(goal.current + amount, goal.target);
+    renderAhorro();
     saveState();
 }
 

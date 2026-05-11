@@ -125,22 +125,20 @@
             </div>
 
             <h3>Mis Metas</h3>
-            <div class="card">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>MacBook Pro</span>
-                    <span style="color: var(--accent-blue);">45%</span>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar" style="width: 45%;" id="goal-progress-bar"></div>
-                </div>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;"><span
-                        id="goal-saved">$1.8M</span> de $4.0M COP</p>
-                <div style="text-align: center;">
-                    <button class="btn btn-primary" style="margin-top: 15px; padding: 10px;"
-                        onclick="addSavings()">Abonar a Meta</button>
-                </div>
-                <div id="savings-list" style="margin-top: 15px;"></div>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <button class="btn" style="background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue);"
+                    onclick="addGoal()">
+                    <i data-lucide="plus" style="vertical-align: middle; margin-right: 5px;"></i> Agregar Meta
+                </button>
             </div>
+            <div id="goals-container">
+                <!-- Dinámico -->
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" style="margin-top: 15px; padding: 10px;"
+                    onclick="addSavings()">Abonar a Ahorro</button>
+            </div>
+            <div id="savings-list" style="margin-top: 15px;"></div>
 
             <h3>Retos Activos</h3>
             <div class="card" style="border-left: 4px solid var(--warning);">
