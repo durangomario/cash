@@ -9,6 +9,7 @@ const state = {
         { id: 1, name: 'MacBook Pro', target: 4000000, current: 1800000 }
     ],
     showSavingsList: true,
+    showExpensesList: true,
     get totalSavings() { return this.savings.reduce((a, b) => a + b.amount, 0); },
     get portfolio() { return this.investments.reduce((a, b) => a + b.amount, 0); },
     lastMonthTotal: 0,
@@ -35,6 +36,7 @@ function saveState() {
         investments: state.investments,
         goals: state.goals,
         showSavingsList: state.showSavingsList,
+        showExpensesList: state.showExpensesList,
         lastMonthTotal: state.lastMonthTotal,
         userName: state.userName,
         userEmail: state.userEmail
@@ -55,6 +57,7 @@ function loadState() {
             if (parsed.investments) state.investments = parsed.investments.map(i => ({ ...i, date: new Date(i.date) }));
             if (parsed.goals) state.goals = parsed.goals;
             if (parsed.showSavingsList !== undefined) state.showSavingsList = parsed.showSavingsList;
+            if (parsed.showExpensesList !== undefined) state.showExpensesList = parsed.showExpensesList;
         } catch (e) { console.error("Error loading state", e); }
     }
 }
@@ -237,24 +240,52 @@ function renderGastos() {
     document.getElementById('gastos-total').innerText = formatMoney(currentExpenses);
 
     // Render List
-    document.getElementById('expenses-list').innerHTML = state.expenses.map(e => `
-        <div class="expense-item">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <div class="expense-icon">${getExpenseIcon(e.category)}</div>
-                <div>
-                    <h4>${e.category}</h4>
-                    <p style="font-size: 12px; color: var(--text-secondary);">${e.date.toLocaleDateString()}</p>
+    const expensesList = document.getElementById('expenses-list');
+    if (state.expenses.length === 0 || !state.showExpensesList) {
+        if (state.expenses.length > 0) {
+            // Mostrar solo el botón para expandir si hay gastos pero están ocultos
+            expensesList.innerHTML = `
+                <div style="text-align: center; padding: 10px;">
+                    <button class="btn" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); width: 100%;"
+                            onclick="toggleExpensesList()">
+                        <i data-lucide="chevron-down" style="vertical-align: middle; margin-right: 5px;"></i> 
+                        Mostrar Últimos Movimientos (${state.expenses.length})
+                    </button>
                 </div>
+            `;
+        } else {
+            expensesList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No hay gastos registrados aún.</p>';
+        }
+    } else {
+        // Mostrar los gastos con opción de ocultar
+        expensesList.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px;">
+                <h3 style="margin: 0; font-size: 14px; color: var(--text-secondary);">Últimos Movimientos</h3>
+                <button onclick="toggleExpensesList()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;" title="Ocultar">
+                    <i data-lucide="chevron-up" style="width: 14px; height: 14px;"></i>
+                </button>
             </div>
-            <div style="text-align: right;">
-                <h4 style="color: var(--danger);">-${formatMoney(e.amount)}</h4>
-                <div style="margin-top: 5px;">
-                    <button onclick="editExpense(${e.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 10px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
-                    <button onclick="deleteExpense(${e.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+            ${state.expenses.map(e => `
+                <div class="expense-item">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div class="expense-icon">${getExpenseIcon(e.category)}</div>
+                        <div>
+                            <h4>${e.category}</h4>
+                            <p style="font-size: 12px; color: var(--text-secondary);">${e.date.toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <h4 style="color: var(--danger);">-${formatMoney(e.amount)}</h4>
+                        <div style="margin-top: 5px;">
+                            <button onclick="editExpense(${e.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; margin-right: 10px;" title="Editar"><i data-lucide="edit-2" style="width: 14px; height: 14px;"></i></button>
+                            <button onclick="deleteExpense(${e.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    `).join('');
+            `).join('')}
+        `;
+    }
+    lucide.createIcons();
 
     // Gráfica CSS Simple (agrupación por categoría)
     const chartContainer = document.getElementById('expense-chart');
@@ -384,6 +415,12 @@ function editExpense(id) {
 function toggleSavingsList() {
     state.showSavingsList = !state.showSavingsList;
     renderAhorro();
+    saveState();
+}
+
+function toggleExpensesList() {
+    state.showExpensesList = !state.showExpensesList;
+    renderGastos();
     saveState();
 }
 
