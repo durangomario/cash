@@ -706,6 +706,39 @@ function addSavingsToGoal(goalId) {
     }
 }
 
+// ---- Función para limpiar todos los datos ----
+function clearAllData() {
+    const confirmMessage = "⚠️ ¿Estás seguro que deseas limpiar TODOS tus datos?\n\nEsta acción borrará permanentemente:\n• Todo tu saldo disponible\n• Todos tus gastos registrados\n• Todos tus ahorros y abonos\n• Todas tus metas configuradas\n• Todas tus inversiones\n\nEsta acción no se puede deshacer.\n\nEscribe 'BORRAR' para confirmar:";
+    
+    const confirmation = prompt(confirmMessage);
+    if (confirmation !== 'BORRAR') {
+        return alert("Operación cancelada. Tus datos están seguros.");
+    }
+
+    // Restablecer el estado a valores iniciales
+    state.balance = 0;
+    state.expenses = [];
+    state.savings = [];
+    state.investments = [];
+    state.goals = [
+        { id: 1, name: 'MacBook Pro', target: 4000000, current: 0 }
+    ];
+    state.lastMonthTotal = 0;
+    
+    // Mantener el nombre y email del usuario
+    
+    // Guardar el estado limpio
+    saveState();
+    
+    // Re-renderizar todas las pantallas
+    renderInicio();
+    renderAhorro();
+    renderInversion();
+    renderPerfil();
+    
+    alert("✅ Todos tus datos han sido limpiados exitosamente. Puedes empezar de cero.");
+}
+
 // Inicialización
 window.onload = () => {
     loadState();
