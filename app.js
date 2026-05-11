@@ -338,21 +338,26 @@ function renderAhorro() {
         } else {
             goalsContainer.innerHTML = state.goals.map(goal => {
                 const porcentaje = Math.min(100, (goal.current / goal.target) * 100);
+                const isCompleted = goal.current >= goal.target;
                 return `
                     <div class="card" style="margin-bottom: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h4 style="margin: 0;">${goal.name}</h4>
+                            <h4 style="margin: 0;">${goal.name} ${isCompleted ? '✅' : ''}</h4>
                             <div>
+                                <button onclick="addSavingsToGoal(${goal.id})" style="background: none; border: none; color: var(--safe); cursor: pointer; margin-right: 5px;" title="Abonar a meta"><i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i></button>
                                 <button onclick="deleteGoal(${goal.id})" style="background: none; border: none; color: var(--danger); cursor: pointer;" title="Eliminar meta"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
                             </div>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin: 10px 0;">
-                            <span style="color: var(--accent-blue); font-weight: bold;">${porcentaje.toFixed(0)}%</span>
+                            <span style="color: ${isCompleted ? 'var(--safe)' : 'var(--accent-blue)'}; font-weight: bold;">${porcentaje.toFixed(0)}%</span>
                             <span style="font-size: 12px; color: var(--text-secondary);">${formatMoney(goal.current)} de ${formatMoney(goal.target)}</span>
                         </div>
                         <div class="progress-container">
-                            <div class="progress-bar" style="width: ${porcentaje}%;"></div>
+                            <div class="progress-bar" style="width: ${porcentaje}%; ${isCompleted ? 'background: var(--safe);' : ''}"></div>
                         </div>
+                        ${!isCompleted ? `<div style="text-align: center; margin-top: 10px;">
+                            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="addSavingsToGoal(${goal.id})">Abonar a Meta</button>
+                        </div>` : '<div style="text-align: center; margin-top: 10px; color: var(--safe); font-size: 12px; font-weight: bold;">¡Meta completada!</div>'}
                     </div>
                 `;
             }).join('');
@@ -656,6 +661,49 @@ function updateGoalProgress(id, amount) {
     goal.current = Math.min(goal.current + amount, goal.target);
     renderAhorro();
     saveState();
+}
+
+function addSavingsToGoal(goalId) {
+    const goal = state.goals.find(g => g.id === goalId);
+    if (!goal) return;
+
+    const amountStr = prompt(`¿Cuánto deseas abonar a la meta "${goal.name}"? (Se descontará de tu dinero disponible)`);
+    if (!amountStr) return;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Monto inválido");
+
+    if (state.balance < amount) {
+        return alert("No tienes suficiente dinero disponible. ¡Añade ingresos primero!");
+    }
+
+    // Verificar si el abono excede el objetivo
+    if (goal.current + amount > goal.target) {
+        const excess = goal.current + amount - goal.target;
+        const confirmExcess = confirm(`Este abono excede tu meta en ${formatMoney(excess)}. ¿Deseas continuar de todas formas?`);
+        if (!confirmExcess) return;
+    }
+
+    state.balance -= amount;
+    goal.current = Math.min(goal.current + amount, goal.target);
+
+    // También agregar al registro general de ahorros
+    state.savings.unshift({ 
+        id: Date.now(), 
+        amount: amount, 
+        date: new Date(),
+        goalId: goalId,
+        goalName: goal.name
+    });
+
+    renderAhorro();
+    if (state.currentScreen === 'inicio') renderInicio();
+    saveState();
+    
+    if (goal.current >= goal.target) {
+        alert(`¡Felicidades! Has completado tu meta "${goal.name}" 🎉`);
+    } else {
+        alert(`¡Has abonado ${formatMoney(amount)} a tu meta "${goal.name}"!`);
+    }
 }
 
 // Inicialización
