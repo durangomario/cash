@@ -129,6 +129,59 @@ function switchScreen(screenId) {
     if (screenId === 'perfil') renderPerfil();
 }
 
+// ---- Funciones de Análisis de Gastos ----
+function getHighestCategory() {
+    let highestCategory = "Salidas"; // default
+    let highestAmount = 0;
+    if (state.expenses.length > 0) {
+        const catTotals = {};
+        state.expenses.forEach(e => {
+            catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+        });
+        highestCategory = Object.keys(catTotals).reduce((a, b) => catTotals[a] > catTotals[b] ? a : b);
+        highestAmount = catTotals[highestCategory];
+    }
+    return { category: highestCategory, amount: highestAmount };
+}
+
+function generateSavingsTip() {
+    const { category, amount } = getHighestCategory();
+    
+    const categoryTips = {
+        'Comida': {
+            reduction: 0.3,
+            message: 'comidas fuera de casa',
+            examples: ['cafés', 'almuerzos', 'cenas', 'snacks']
+        },
+        'Transporte': {
+            reduction: 0.25,
+            message: 'transporte en apps',
+            examples: ['viajes en Uber', 'taxi', 'transporte privado']
+        },
+        'Salidas': {
+            reduction: 0.4,
+            message: 'salidas y entretenimiento',
+            examples: ['cine', 'bares', 'eventos', 'conciertos']
+        },
+        'Compras': {
+            reduction: 0.35,
+            message: 'compras impulsivas',
+            examples: ['ropa', 'artículos electrónicos', 'accesorios']
+        },
+        'Otros': {
+            reduction: 0.2,
+            message: 'gastos varios',
+            examples: ['gastos no planeados', 'imprevistos']
+        }
+    };
+    
+    const tip = categoryTips[category] || categoryTips['Otros'];
+    const potentialSavings = Math.round(amount * tip.reduction);
+    const example = tip.examples[Math.floor(Math.random() * tip.examples.length)];
+    
+    return `💡 Si reduces tus ${tip.message} esta semana (especialmente ${example}), podrías ahorrar ${formatMoney(potentialSavings)} adicionales.`;
+}
+
 // ---- Pantalla 1: Inicio ----
 function renderInicio() {
     // Gastos totales reales (para notificaciones comparativas)
@@ -156,7 +209,7 @@ function renderInicio() {
     const ahorroRestante = metaTotal - state.totalSavings;
 
     const dynamicNotifications = [
-        `💡 Si reduces tus comidas fuera de casa esta semana, podrías ahorrar $40,000 adicionales.`,
+        generateSavingsTip(),
         totalExpenses > state.lastMonthTotal
             ? `⚠️ Has gastado más que el mes pasado. ¡Revisa tus gastos!`
             : `🔥 ¡Vas excelente! Has gastado menos que el mes pasado a esta misma fecha.`,
