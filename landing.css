@@ -70,10 +70,17 @@ nav {
 }
 
 .logo {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--text-main);
+    display: flex;
+    align-items: center;
 }
+
+.logo img {
+    height: 45px;
+    width: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
 
 /* 1. Hero Section */
 .hero {

@@ -543,19 +543,19 @@ function renderAprender() {
             youtubeId: "wMY0Q8NTll8"
         },
         {
-            title: "Inversión para Principiantes",
-            description: "Aprende qué es invertir y por qué es clave para tu futuro financiero.",
-            youtubeId: "Xm-hXUeNf6w"
+            title: "Cómo hacer un Presupuesto",
+            description: "Aprende a organizar tus ingresos y gastos para tomar el control de tu dinero.",
+            youtubeId: "uW-Zf3vR_iI"
         },
         {
-            title: "El Poder del Interés Compuesto",
-            description: "Descubre cómo hacer que tu dinero trabaje por ti de forma exponencial.",
-            youtubeId: "8y_zV6oX9YI"
+            title: "¿Cómo invertir? Conceptos Básicos",
+            description: "Entiende qué es el rendimiento, el riesgo y los plazos antes de invertir.",
+            youtubeId: "eMv9_5G-U6U"
         },
         {
-            title: "Cómo hacer un Presupuesto Real",
-            description: "La guía definitiva para organizar tus ingresos y gastos de forma sencilla.",
-            youtubeId: "9aXvR6Pz-O8"
+            title: "Que no te asuste el Buró de Crédito",
+            description: "Descubre la importancia de tu historial crediticio y cómo manejarlo correctamente.",
+            youtubeId: "o45S3o6T6F8"
         }
     ];
 

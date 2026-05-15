@@ -42,6 +42,23 @@ body {
     overflow: hidden;
 }
 
+.app-header {
+    padding: 15px 20px 5px;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    z-index: 10;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+}
+
+
 .bottom-nav {
     position: fixed;
     bottom: 0;
