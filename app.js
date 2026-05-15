@@ -538,23 +538,23 @@ function renderAprender() {
     const videoFeed = document.getElementById('video-feed-container');
     const videos = [
         {
-            title: "5 Pasos para Ahorrar Exitosamente",
-            description: "Aprende un método probado para organizar tus finanzas y empezar a ahorrar hoy mismo.",
-            youtubeId: "N6T2-iB42lY"
+            title: "Ahorro: Primer Paso para tus Metas",
+            description: "Consejos oficiales de CONDUSEF para empezar a ahorrar y vencer los pretextos.",
+            youtubeId: "wMY0Q8NTll8"
         },
         {
-            title: "Inversiones para Principiantes",
-            description: "Todo lo que necesitas saber para empezar a invertir tu dinero de forma segura.",
-            youtubeId: "lR7Qv_v6t2Y"
+            title: "Inversión para Principiantes",
+            description: "Aprende qué es invertir y por qué es clave para tu futuro financiero.",
+            youtubeId: "Xm-hXUeNf6w"
         },
         {
             title: "El Poder del Interés Compuesto",
-            description: "Descubre cómo hacer que tu dinero trabaje por ti y crezca con el tiempo.",
+            description: "Descubre cómo hacer que tu dinero trabaje por ti de forma exponencial.",
             youtubeId: "8y_zV6oX9YI"
         },
         {
-            title: "La Regla 50/30/20",
-            description: "La técnica más sencilla y efectiva para administrar tu presupuesto mensual.",
+            title: "Cómo hacer un Presupuesto Real",
+            description: "La guía definitiva para organizar tus ingresos y gastos de forma sencilla.",
             youtubeId: "9aXvR6Pz-O8"
         }
     ];
@@ -563,10 +563,15 @@ function renderAprender() {
         videoFeed.innerHTML = videos.map(v => `
             <div class="video-card">
                 <div class="video-thumbnail">
-                    <iframe src="https://www.youtube-nocookie.com/embed/${v.youtubeId}?rel=0" 
-                            title="${v.title}" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen></iframe>
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/${v.youtubeId}" 
+                        title="${v.title}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
                 <div class="video-info">
                     <h4>${v.title}</h4>
