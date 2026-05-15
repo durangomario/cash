@@ -54,20 +54,22 @@ body {
     backdrop-filter: blur(10px);
     border-top: 1px solid var(--glass-border);
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 5px;
     z-index: 100;
 }
 
 .nav-item {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     color: var(--text-secondary);
-    font-size: 10px;
+    font-size: 9px;
     cursor: pointer;
     transition: all 0.3s ease;
+    padding: 5px 0;
 }
 
 .nav-item.active {
@@ -402,6 +404,56 @@ h3 {
     width: 90%;
     max-width: 400px;
 }
+
+/* Aprender Section / Video Feed */
+.video-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.video-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.video-card:active {
+    transform: scale(0.98);
+}
+
+.video-thumbnail {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    position: relative;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.video-thumbnail iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.video-info {
+    padding: 15px;
+}
+
+.video-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.video-info p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
 
 /* Filtros de fecha */
 .filter-btn {

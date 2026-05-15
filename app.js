@@ -128,6 +128,7 @@ function switchScreen(screenId) {
     if (screenId === 'gastos') renderGastos();
     if (screenId === 'ahorro') renderAhorro();
     if (screenId === 'inversion') renderInversion();
+    if (screenId === 'aprender') renderAprender();
     if (screenId === 'calculadora') renderCalculadora();
     if (screenId === 'perfil') renderPerfil();
 }
@@ -530,6 +531,50 @@ function renderCalculadora() {
     document.getElementById('calc-result').innerText = '';
     document.getElementById('calc-amount').value = '';
     document.getElementById('calc-months').value = '';
+}
+
+// ---- Pantalla 5: Aprender ----
+function renderAprender() {
+    const videoFeed = document.getElementById('video-feed-container');
+    const videos = [
+        {
+            title: "Ahorro Inteligente: Los Primeros Pasos",
+            description: "Aprende las bases del ahorro inteligente y cómo crear tu primer fondo de emergencia paso a paso.",
+            youtubeId: "J8m8yT2S7_s"
+        },
+        {
+            title: "Inversiones para Estudiantes",
+            description: "Descubre qué es invertir y por qué es la clave para tu libertad financiera a largo plazo.",
+            youtubeId: "vB-o6fUeI6k"
+        },
+        {
+            title: "El Poder del Interés Compuesto",
+            description: "Entiende cómo el tiempo y la constancia pueden multiplicar tu dinero de forma exponencial.",
+            youtubeId: "v9A9_xMvK-E"
+        },
+        {
+            title: "Guía de Presupuesto 50/30/20",
+            description: "Domina la técnica de presupuesto más efectiva para organizar tus ingresos y gastos.",
+            youtubeId: "O9uXz6X-0bM"
+        }
+    ];
+
+    if (videoFeed) {
+        videoFeed.innerHTML = videos.map(v => `
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    <iframe src="https://www.youtube.com/embed/${v.youtubeId}" 
+                            title="${v.title}" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                </div>
+                <div class="video-info">
+                    <h4>${v.title}</h4>
+                    <p>${v.description}</p>
+                </div>
+            </div>
+        `).join('');
+    }
 }
 
 // ---- Pantalla 4: Inversión ----
