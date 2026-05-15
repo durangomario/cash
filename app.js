@@ -549,9 +549,9 @@ function renderAprender() {
             youtubeId: "wMY0Q8NTll8"
         },
         {
-            title: "¿Cómo invertir? Conceptos Básicos",
-            description: "Entiende qué es el rendimiento, el riesgo y los plazos antes de invertir.",
-            youtubeId: "eMv9_5G-U6U"
+            title: "El Poder del Interés Compuesto",
+            description: "Descubre cómo hacer que tu dinero trabaje por ti de forma exponencial a través del tiempo.",
+            youtubeId: "8y_zV6oX9YI"
         }
     ];
 
@@ -572,9 +572,13 @@ function renderAprender() {
                 <div class="video-info">
                     <h4>${v.title}</h4>
                     <p>${v.description}</p>
+                    <a href="https://www.youtube.com/watch?v=${v.youtubeId}" target="_blank" style="color: var(--accent-blue); font-size: 12px; text-decoration: none; display: block; margin-top: 8px;">
+                        <i data-lucide="external-link" style="width: 12px; height: 12px; vertical-align: middle;"></i> Ver directamente en YouTube
+                    </a>
                 </div>
             </div>
         `).join('');
+        lucide.createIcons();
     }
 }
 
