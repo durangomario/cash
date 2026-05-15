@@ -538,24 +538,24 @@ function renderAprender() {
     const videoFeed = document.getElementById('video-feed-container');
     const videos = [
         {
-            title: "Ahorro Inteligente: Los Primeros Pasos",
-            description: "Aprende las bases del ahorro inteligente y cómo crear tu primer fondo de emergencia paso a paso.",
-            youtubeId: "J8m8yT2S7_s"
+            title: "5 Pasos para Ahorrar Exitosamente",
+            description: "Aprende un método probado para organizar tus finanzas y empezar a ahorrar hoy mismo.",
+            youtubeId: "N6T2-iB42lY"
         },
         {
-            title: "Inversiones para Estudiantes",
-            description: "Descubre qué es invertir y por qué es la clave para tu libertad financiera a largo plazo.",
-            youtubeId: "vB-o6fUeI6k"
+            title: "Inversiones para Principiantes",
+            description: "Todo lo que necesitas saber para empezar a invertir tu dinero de forma segura.",
+            youtubeId: "lR7Qv_v6t2Y"
         },
         {
             title: "El Poder del Interés Compuesto",
-            description: "Entiende cómo el tiempo y la constancia pueden multiplicar tu dinero de forma exponencial.",
-            youtubeId: "v9A9_xMvK-E"
+            description: "Descubre cómo hacer que tu dinero trabaje por ti y crezca con el tiempo.",
+            youtubeId: "8y_zV6oX9YI"
         },
         {
-            title: "Guía de Presupuesto 50/30/20",
-            description: "Domina la técnica de presupuesto más efectiva para organizar tus ingresos y gastos.",
-            youtubeId: "O9uXz6X-0bM"
+            title: "La Regla 50/30/20",
+            description: "La técnica más sencilla y efectiva para administrar tu presupuesto mensual.",
+            youtubeId: "9aXvR6Pz-O8"
         }
     ];
 
@@ -563,7 +563,7 @@ function renderAprender() {
         videoFeed.innerHTML = videos.map(v => `
             <div class="video-card">
                 <div class="video-thumbnail">
-                    <iframe src="https://www.youtube.com/embed/${v.youtubeId}" 
+                    <iframe src="https://www.youtube-nocookie.com/embed/${v.youtubeId}?rel=0" 
                             title="${v.title}" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                             allowfullscreen></iframe>
