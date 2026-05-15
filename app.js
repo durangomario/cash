@@ -111,7 +111,11 @@ function switchScreen(screenId) {
     state.currentScreen = screenId;
 
     // UI Update
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    // Actualizar clase del contenedor principal para estilos dinámicos (como el logo centrado en Inicio)
+    const appContainer = document.getElementById('app');
+    appContainer.className = ''; 
+    appContainer.classList.add(`active-screen-${screenId}`);
+
     document.getElementById(`screen-${screenId}`).classList.add('active');
 
     document.querySelectorAll('.nav-item').forEach(item => {

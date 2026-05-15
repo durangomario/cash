@@ -48,6 +48,7 @@ body {
     align-items: center;
     background: transparent;
     z-index: 10;
+    transition: all 0.4s ease;
 }
 
 .logo-img {
@@ -56,6 +57,19 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     border: 1px solid var(--glass-border);
+    transition: all 0.4s ease;
+}
+
+/* Estilos especiales para el logo en la pantalla de Inicio */
+.active-screen-inicio .app-header {
+    justify-content: center;
+    padding: 40px 20px 10px;
+}
+
+.active-screen-inicio .logo-img {
+    height: 90px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 
