@@ -550,8 +550,8 @@ function renderAprender() {
         },
         {
             title: "El Poder del Interés Compuesto",
-            description: "Descubre cómo hacer que tu dinero trabaje por ti de forma exponencial a través del tiempo.",
-            youtubeId: "8y_zV6oX9YI"
+            description: "Aprende cómo el tiempo puede multiplicar tu dinero de forma exponencial.",
+            youtubeId: "3zP7-z9n1Zc"
         }
     ];
 
@@ -572,8 +572,8 @@ function renderAprender() {
                 <div class="video-info">
                     <h4>${v.title}</h4>
                     <p>${v.description}</p>
-                    <a href="https://www.youtube.com/watch?v=${v.youtubeId}" target="_blank" style="color: var(--accent-blue); font-size: 12px; text-decoration: none; display: block; margin-top: 8px;">
-                        <i data-lucide="external-link" style="width: 12px; height: 12px; vertical-align: middle;"></i> Ver directamente en YouTube
+                    <a href="https://www.youtube.com/watch?v=${v.youtubeId}" target="_blank" class="btn-yt">
+                        <i data-lucide="play-circle"></i> Ver en YouTube
                     </a>
                 </div>
             </div>

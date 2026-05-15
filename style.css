@@ -499,6 +499,32 @@ h3 {
     font-size: 13px;
     color: var(--text-secondary);
     line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.btn-yt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ff4d4d;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-yt:hover {
+    background: rgba(239, 68, 68, 0.25);
+    transform: translateY(-2px);
+}
+
+.btn-yt i {
+    width: 16px;
+    height: 16px;
 }
 
 
