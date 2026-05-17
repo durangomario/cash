@@ -456,15 +456,21 @@ h3 {
 .video-feed {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
+    align-items: center;
 }
 
 .video-card {
-    background: var(--glass-bg);
+    background: #000;
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
     transition: transform 0.3s ease;
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 9/16; /* Formato vertical (Reel) */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .video-card:active {
@@ -473,10 +479,11 @@ h3 {
 
 .video-thumbnail {
     width: 100%;
-    aspect-ratio: 16/9;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     background: #000;
-    position: relative;
-    border-bottom: 1px solid var(--glass-border);
 }
 
 .video-thumbnail iframe {
@@ -485,37 +492,51 @@ h3 {
     border: none;
 }
 
+
 .video-info {
-    padding: 15px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 60px 20px 20px;
+    background: linear-gradient(to top, rgba(11, 17, 32, 0.95) 0%, rgba(11, 17, 32, 0.6) 60%, transparent 100%);
+    color: white;
+    pointer-events: none; /* Allows clicks to pass through to the video */
 }
 
 .video-info h4 {
-    margin: 0 0 5px 0;
-    font-size: 16px;
-    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #fff;
+    pointer-events: auto;
 }
 
 .video-info p {
     font-size: 13px;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.8);
     line-height: 1.4;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+    pointer-events: auto;
 }
+
 
 .btn-yt {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(239, 68, 68, 0.15);
-    color: #ff4d4d;
-    padding: 8px 16px;
-    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.9);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
     font-size: 13px;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    border: none;
+    pointer-events: auto;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
 }
+
 
 .btn-yt:hover {
     background: rgba(239, 68, 68, 0.25);
